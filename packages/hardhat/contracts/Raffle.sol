@@ -1,63 +1,13 @@
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.7;
 
 
-import "OpenZeppelin/openzeppelin-contracts@4.0.0/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.0.0/contracts/token/ERC721/ERC721.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.0.0/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-import "OpenZeppelin/openzeppelin-contracts@4.0.0/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 
+import "./RaffleTicket.sol";
 
-import "OpenZeppelin/openzeppelin-contracts@4.0.0/contracts/proxy/Clones.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.0.0/contracts/proxy/utils/Initializable.sol";
-
-import "smartcontractkit/chainlink@0.10.4/contracts/src/v0.6/VRFConsumerBase.sol";
-
-
-// Chainlink scratch
-contract RandomGenerator is VRFConsumerBase {
-
-    uint256 public randomResult;
-
-    constructor(
-        address _vrfCoordinator, 
-        address _link
-    ) VRFConsumerBase(_vrfCoordinator, _link) public {
-    }
-
-    /** 
-     * Requests randomness from a user-provided seed
-     */
-    function getRandomNumber(uint256 userProvidedSeed) public returns (bytes32 requestId) {
-        require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
-        return requestRandomness(keyHash, fee, userProvidedSeed);
-    }
-
-    /**
-     * Callback function used by VRF Coordinator
-     */
-    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        randomResult = randomness;
-    }
-}
-
-
-// https://eips.ethereum.org/EIPS/eip-721
-contract RaffleTicket is ERC721 {
-    event minted(uint mintedNum, address buyer);
-
-    constructor() ERC721("RaffleTicket", "TIX") {}
-
-    // This contract does not control the supply.
-    // Only the minter (the raffle contract) should be able to call this.
-    // need to add access control/minter role
-    function sendTicket(address buyer, uint ticketNum) public { 
-        _mint(buyer, ticketNum);
-        emit minted(ticketNum, buyer);
-    }
-}
-
-contract Raffle2 is Initializable, IERC721Receiver {
+contract Raffle is Initializable, IERC721Receiver {
     RaffleTicket public ticketMaker;
     uint public numInitialTickets;
     uint public ticketPrice;
@@ -67,7 +17,7 @@ contract Raffle2 is Initializable, IERC721Receiver {
     address public prizeAddress;
 
     address public manager;
-    address public benefactor;
+    address payable public benefactor;
     address public donor;
 
     event nftReceived(string msg);
@@ -79,11 +29,11 @@ contract Raffle2 is Initializable, IERC721Receiver {
     function initialize(
         uint  initialNumTickets, 
         uint  initialTicketPrice,
-        address manager,
-        address benefactor
+        address raffleManager,
+        address payable raffleBenefactor
     ) public {
-        manager = manager;
-        benefactor = benefactor;
+        manager = raffleManager;
+        benefactor = raffleBenefactor;
 
         ticketMaker = new RaffleTicket();
         
@@ -141,7 +91,8 @@ contract Raffle2 is Initializable, IERC721Receiver {
         // winner can't be an unsold ticket
         uint winningTicketIndex = dangerousPseudoRandom() % numTicketsSold;
         // charity gets the prize moneys
-        benefactor.send(this.value)
+        // TODO use safetransfer instead
+        benefactor.send(address(this).balance);
 
         // owner of the winning ticket gets the prize NFT
         address winner = ticketMaker.ownerOf(winningTicketIndex);
@@ -155,7 +106,7 @@ contract Raffle2 is Initializable, IERC721Receiver {
 
     // Not perfect, ideally we can receive the NFT in the same step as initializing
     // the contract, or *at least* through an interface that lives on the raffle itself.
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) public override returns (bytes4) {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data) public override returns (bytes4) {
         emit nftReceived("");
 
         // kinda janky, decline any tokens past the first one donated
@@ -173,30 +124,5 @@ contract Raffle2 is Initializable, IERC721Receiver {
     modifier managerOnly() {
         require(msg.sender == manager, 'This action can only be performed by contract manager.');
         _;
-    }}
-}
-
-
-contract RaffleFactory {
-    address immutable raffleImplementation;
-
-    constructor() {
-        raffleImplementation = address(new Raffle2());
-    }
-
-    function createRaffle(
-        uint  initialNumTickets, 
-        uint  initialTicketPrice,
-        address benefactor,
-    ) external returns (address) {
-        address clone = Clones.clone(raffleImplementation);
-        Raffle2(clone).initialize(
-            initialNumTickets, 
-            initialTicketPrice,
-            msg.sender,
-            benefactor
-        );
-
-        return clone;
     }
 }
