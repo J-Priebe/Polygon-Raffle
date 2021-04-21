@@ -38,6 +38,8 @@ import "./Raffle.sol";
 contract RaffleFactory {
     address immutable raffleImplementation;
 
+    address[] public raffles;
+
     constructor() public {
         raffleImplementation = address(new Raffle());
     }
@@ -55,6 +57,14 @@ contract RaffleFactory {
             benefactor
         );
 
+        raffles.push(clone);
+
         return clone;
     }
+
+    // return the whole array
+    function getAllRaffles() public view returns (address[] memory) {
+        return raffles;
+    }
+
 }

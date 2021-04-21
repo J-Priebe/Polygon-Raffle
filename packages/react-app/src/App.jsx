@@ -111,10 +111,10 @@ function App(props) {
   const myMainnetDAIBalance = useContractReader({DAI: mainnetDAIContract},"DAI", "balanceOf",["0x34aA3F359A9D614239015126635CE7732c18fDF3"])
 
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts,"YourContract", "purpose")
+  const raffles = useContractReader(readContracts,"RaffleFactory", "getAllRaffles")
 
   //📟 Listen for broadcast events
-  const setPurposeEvents = useEventListener(readContracts, "YourContract", "SetPurpose", localProvider, 1);
+  // const createRaffleEvents = useEventListener(readContracts, "RaffleFactory", "CreateRaffle", localProvider, 1);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -142,35 +142,12 @@ function App(props) {
 
   const [oldMainnetBalance, setOldMainnetDAIBalance] = useState(0)
 
-  // For Master Branch Example
-  const [oldPurposeEvents, setOldPurposeEvents] = useState([])
-
-  // For Buyer-Lazy-Mint Branch Example
-  // const [oldTransferEvents, setOldTransferEvents] = useState([])
-  // const [oldBalance, setOldBalance] = useState(0)
-
   // Use this effect for often changing things like your balance and transfer events or contract-specific effects
   useEffect(()=>{
     if(DEBUG){
       if(myMainnetDAIBalance && !myMainnetDAIBalance.eq(oldMainnetBalance)){
         console.log("🥇 myMainnetDAIBalance:",myMainnetDAIBalance)
         setOldMainnetDAIBalance(myMainnetDAIBalance)
-      }
-
-      // For Buyer-Lazy-Mint Branch Example
-      //if(transferEvents && oldTransferEvents !== transferEvents){
-      //  console.log("📟 Transfer events:", transferEvents)
-      //  setOldTransferEvents(transferEvents)
-      //}
-      //if(balance && !balance.eq(oldBalance)){
-      //  console.log("🤗 balance:", balance)
-      //  setOldBalance(balance)
-      //}
-
-      // For Master Branch Example
-      if(setPurposeEvents && setPurposeEvents !== oldPurposeEvents){
-        console.log("📟 SetPurpose events:",setPurposeEvents)
-        setOldPurposeEvents(setPurposeEvents)
       }
     }
   }, [myMainnetDAIBalance]) // For Buyer-Lazy-Mint Branch: balance, transferEvents
@@ -246,7 +223,7 @@ function App(props) {
 
         <Menu style={{ textAlign:"center" }} selectedKeys={[route]} mode="horizontal">
           <Menu.Item key="/">
-            <Link onClick={()=>{setRoute("/")}} to="/">YourContract</Link>
+            <Link onClick={()=>{setRoute("/")}} to="/">RaffleFactory</Link>
           </Menu.Item>
           <Menu.Item key="/hints">
             <Link onClick={()=>{setRoute("/hints")}} to="/hints">Hints</Link>
@@ -271,7 +248,7 @@ function App(props) {
             */}
 
             <Contract
-              name="YourContract"
+              name="RaffleFactory"
               signer={userProvider.getSigner()}
               provider={localProvider}
               address={address}
@@ -311,7 +288,6 @@ function App(props) {
           <Route path="/exampleui">
             <ExampleUI
               address={address}
-              userProvider={userProvider}
               mainnetProvider={mainnetProvider}
               localProvider={localProvider}
               yourLocalBalance={yourLocalBalance}
@@ -319,8 +295,7 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
-              purpose={purpose}
-              setPurposeEvents={setPurposeEvents}
+              raffles={raffles}
             />
           </Route>
           <Route path="/mainnetdai">

@@ -7,11 +7,11 @@ use(solidity);
 describe("My Dapp", function () {
   let myContract;
 
-  describe("YourContract", function () {
-    it("Should deploy YourContract", async function () {
-      const YourContract = await ethers.getContractFactory("YourContract");
+  describe("RaffleFactory", function () {
+    it("Should deploy RaffleFactory", async function () {
+      const RaffleFactory = await ethers.getContractFactory("RaffleFactory");
 
-      myContract = await YourContract.deploy();
+      myContract = await RaffleFactory.deploy();
     });
 
     describe("setPurpose()", function () {

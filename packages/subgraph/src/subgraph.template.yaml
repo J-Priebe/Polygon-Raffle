@@ -3,11 +3,11 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
+    name: RaffleFactory
     network: localhost
     source:
-      address: '{{YourContractAddress}}'
-      abi: YourContract
+      address: '{{RaffleFactoryAddress}}'
+      abi: RaffleFactory
       startBlock: 1
     mapping:
       kind: ethereum/events
@@ -17,8 +17,8 @@ dataSources:
         - Purpose
         - Sender
       abis:
-        - name: YourContract
-          file: ./abis/YourContract.json
+        - name: RaffleFactory
+          file: ./abis/RaffleFactory.json
       eventHandlers:
         - event: SetPurpose(address,string)
           handler: handleSetPurpose
