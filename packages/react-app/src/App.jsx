@@ -137,7 +137,7 @@ function App(props) {
       console.log("🌍 DAI contract on mainnet:",mainnetDAIContract)
       console.log("🔐 writeContracts",writeContracts)
     }
-  }, [mainnetProvider, address, selectedChainId, yourLocalBalance, yourMainnetBalance, readContracts, writeContracts, mainnetDAIContract])
+  }, [localChainId])
 
 
   const [oldMainnetBalance, setOldMainnetDAIBalance] = useState(0)

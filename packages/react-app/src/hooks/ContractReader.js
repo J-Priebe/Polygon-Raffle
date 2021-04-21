@@ -20,7 +20,7 @@ const DEBUG = false;
 */
 
 export default function useContractReader(contracts, contractName, functionName, args, pollTime, formatter, onChange) {
-  let adjustPollTime = 1777;
+  let adjustPollTime = 11777;
   if (pollTime) {
     adjustPollTime = pollTime;
   } else if (!pollTime && typeof args === "number") {
@@ -50,7 +50,7 @@ export default function useContractReader(contracts, contractName, functionName,
         if (formatter && typeof formatter === "function") {
           newValue = formatter(newValue);
         }
-        // console.log("GOT VALUE",newValue)
+        // if(contractName == 'Raffle') console.log("GOT VALUE",newValue)
         if (newValue !== value) {
           setValue(newValue);
         }

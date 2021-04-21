@@ -10,6 +10,9 @@ const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
   const raffleFactory = await deploy("RaffleFactory") // <-- add in constructor args like line 19 vvvv
+  // Deploying these for the ABI even though they are cloned/minted
+  const raffle = await deploy("Raffle")
+  const raffleTicket = await deploy("RaffleTicket")
 
   //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   //const secondContract = await deploy("SecondContract")
