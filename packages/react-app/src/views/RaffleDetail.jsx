@@ -7,7 +7,7 @@ import { parseEther, formatEther } from "@ethersproject/units";
 
 import { Button, Input } from "antd";
 
-export default function RaffleDetail({ provider, writeContracts, tx }) {
+export default function RaffleDetail({ provider, tx, connectedAddress }) {
   // nneed a way to write to the address as well as read
 
   let { address } = useParams();
@@ -21,16 +21,21 @@ export default function RaffleDetail({ provider, writeContracts, tx }) {
   const numTicketsSold = useContractReader({ Raffle: raffleClone }, "Raffle", "numTicketsSold");
   const numInitialTickets = useContractReader({ Raffle: raffleClone }, "Raffle", "numInitialTickets");
   const managerAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "manager");
+  const ticketMinterAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketMaker");
 
-  // TODO... either iterate through tickets owned by minter
-  // or just store a map of num tickets per person
+  const ownedByYou = useContractReader({ Raffle: raffleClone }, "Raffle", "getTicketBalance", [connectedAddress]);
+
+  // this blows up if unsold
+  // it also gets called way too much.. like multiple times sequentially
   const ownerOfFirstTicket = useContractReader({ Raffle: raffleClone }, "Raffle", "getTicketOwner", [0]);
-  console.log("first owner", ownerOfFirstTicket, numTicketsSold);
   return (
     <div>
       Detail view of raffle, view tickets, enter raffle, etc etc.
+      <p>Connected Address: {connectedAddress}</p>
+      <p>Owned by You: {ownedByYou? ownedByYou.toString() : ""}</p>
       <p>Adress: {address}</p>
       <p>Manager: {managerAddress}</p>
+      <p>Minting Contract Address: {ticketMinterAddress}</p>
       <p>Tickets Sold: {numTicketsSold ? numTicketsSold.toString() : ""}</p>
       <p>Tickets Initially Available: {numInitialTickets ? numInitialTickets.toString() : ""}</p>
       <p>Your tickets: TODO. need to either track them in raffle, maybe a function that examines them all</p>
@@ -48,7 +53,7 @@ export default function RaffleDetail({ provider, writeContracts, tx }) {
         />
         <Button
           onClick={() => {
-            tx(raffleClone.enter({ value: ticketPrice }));
+            tx(raffleClone.enter({ value: ticketPrice * numTicketsToBuy }));
           }}
         >
           Enter

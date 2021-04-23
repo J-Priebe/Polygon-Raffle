@@ -26,6 +26,10 @@ contract Raffle is Initializable, IERC721Receiver {
         return ticketMaker.ownerOf(ticketId);
     }
 
+    function getTicketBalance(address addr) public view returns (uint256) {
+        return ticketMaker.balanceOf(addr);
+    }
+
     function initialize(
         uint  initialNumTickets, 
         uint  initialTicketPrice,

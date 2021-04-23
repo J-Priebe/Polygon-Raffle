@@ -309,7 +309,11 @@ function App(props) {
             />
           </Route>
           <Route name="raffleDetail" path="/raffle/:address">
-            <RaffleDetail provider={userProvider} writeContracts={writeContracts} tx={tx} />
+            <RaffleDetail 
+              provider={userProvider} 
+              tx={tx} 
+              connectedAddress={address}
+            />
           </Route>
         </Switch>
       </BrowserRouter>

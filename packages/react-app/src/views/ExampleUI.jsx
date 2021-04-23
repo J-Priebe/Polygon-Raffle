@@ -57,6 +57,7 @@ export default function ExampleUI({
             }}
             value={benefactorAddress}
           />
+          {/* TODO refresh upon transaction complete instead of waiting for poll.. */}
           <Button
             onClick={() => {
               tx(writeContracts.RaffleFactory.createRaffle(numTickets, ticketPrice, benefactorAddress));

@@ -36,7 +36,7 @@ export default function Provider(props) {
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
-  }, 1377);
+  }, 11377);
 
   if (
     typeof props.provider === "undefined" ||

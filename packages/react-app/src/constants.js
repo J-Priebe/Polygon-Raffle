@@ -22,6 +22,8 @@ export const NETWORK = (chainId)=>{
   }
 }
 
+// https://hardhat.org/metamask-issue.html
+// metamask assumes 1337 so you need to change its chain ID for local network
 export const NETWORKS = {
     localhost: {
         name: "localhost",
