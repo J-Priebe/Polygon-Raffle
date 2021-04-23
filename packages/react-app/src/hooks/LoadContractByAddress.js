@@ -12,6 +12,8 @@ import { useState, useEffect } from "react";
   the interface, and you actually want to work with clones of that same contract
   which have the same ABI but are deployed and initialized by a factory 
   at a different address.
+
+  I think this is basically ExternalContractLoader...
 */
 
 const loadContract = (contractName, contractAddress, signer) => {
