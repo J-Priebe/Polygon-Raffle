@@ -22,6 +22,8 @@ export const NETWORK = (chainId)=>{
   }
 }
 
+export const SAMPLE_JSON_URI = 'https://api.jsonbin.io/b/608432b348f71c7a71cd4389/3'
+
 // https://hardhat.org/metamask-issue.html
 // metamask assumes 1337 so you need to change its chain ID for local network
 export const NETWORKS = {

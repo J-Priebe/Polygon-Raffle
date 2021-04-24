@@ -8,13 +8,8 @@ import { parseEther, formatEther } from "@ethersproject/units";
 
 export default function ExampleUI({
   raffles,
-  address,
-  mainnetProvider,
   localProvider,
-  yourLocalBalance,
-  price,
   tx,
-  readContracts,
   writeContracts,
 }) {
   const [numTickets, setNumTickets] = useState(100);

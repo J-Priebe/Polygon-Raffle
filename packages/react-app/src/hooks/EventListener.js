@@ -29,6 +29,7 @@ export default function useEventListener(contracts, contractName, eventName, pro
       try {
         contracts[contractName].on(eventName, (...args) => {
           let blockNumber = args[args.length-1].blockNumber
+          console.log('New Event',args);
           setUpdates(messages => [Object.assign({blockNumber},args.pop().args), ...messages]);
         });
         return () => {

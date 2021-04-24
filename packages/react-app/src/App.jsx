@@ -19,7 +19,7 @@ import { Header, Account, Faucet, Contract, ThemeSwitch } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 //import Hints from "./Hints";
-import { Hints, ExampleUI, Subgraph, RaffleDetail } from "./views";
+import { Hints, ExampleUI, Subgraph, RaffleDetail, Admin } from "./views";
 import { useThemeSwitcher } from "react-css-theme-switcher";
 import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
 /*
@@ -206,7 +206,6 @@ function App(props) {
 
   return (
     <div className="App">
-      {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
       {networkDisplay}
       <BrowserRouter>
@@ -218,7 +217,7 @@ function App(props) {
               }}
               to="/"
             >
-              RaffleFactory
+              Home
             </Link>
           </Menu.Item>
           <Menu.Item key="/hints">
@@ -231,14 +230,14 @@ function App(props) {
               Hints
             </Link>
           </Menu.Item>
-          <Menu.Item key="/exampleui">
+          <Menu.Item key="/admin">
             <Link
               onClick={() => {
-                setRoute("/exampleui");
+                setRoute("/admin");
               }}
-              to="/exampleui"
+              to="/admin"
             >
-              ExampleUI
+              Admin
             </Link>
           </Menu.Item>
           <Menu.Item key="/subgraph">
@@ -255,39 +254,6 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
-
-            <Contract
-              name="RaffleFactory"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-
-            {/* uncomment for a second contract:
-            <Contract
-              name="SecondContract"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-            */}
-          </Route>
-          <Route path="/hints">
-            <Hints
-              address={address}
-              yourLocalBalance={yourLocalBalance}
-              mainnetProvider={mainnetProvider}
-              price={price}
-            />
-          </Route>
-          <Route path="/exampleui">
             <ExampleUI
               address={address}
               mainnetProvider={mainnetProvider}
@@ -300,19 +266,34 @@ function App(props) {
               raffles={raffles}
             />
           </Route>
+          <Route name="raffleDetail" path="/raffle/:address">
+            <RaffleDetail 
+              provider={userProvider} 
+              tx={tx} 
+              connectedAddress={address}
+            />
+          </Route>
+          <Route name="admin" path="/admin">
+            <Admin
+              tx={tx}
+              writeContracts={writeContracts}
+              provider={userProvider}
+            />
+          </Route>
+          <Route path="/hints">
+            <Hints
+              address={address}
+              yourLocalBalance={yourLocalBalance}
+              mainnetProvider={mainnetProvider}
+              price={price}
+            />
+          </Route>
           <Route path="/subgraph">
             <Subgraph
               subgraphUri={props.subgraphUri}
               tx={tx}
               writeContracts={writeContracts}
               mainnetProvider={mainnetProvider}
-            />
-          </Route>
-          <Route name="raffleDetail" path="/raffle/:address">
-            <RaffleDetail 
-              provider={userProvider} 
-              tx={tx} 
-              connectedAddress={address}
             />
           </Route>
         </Switch>

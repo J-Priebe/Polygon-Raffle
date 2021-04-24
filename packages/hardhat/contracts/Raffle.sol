@@ -30,6 +30,17 @@ contract Raffle is Initializable, IERC721Receiver {
         return ticketMaker.balanceOf(addr);
     }
 
+    // NOTE: Assumes prize contract includes metadata extension
+    function getPrizeURI() public view returns (string memory) {
+        if (prizeAddress == address(0)) {
+            return '';
+        }
+
+        // Can we catch the fact that extension is not implemented
+        // and return a placeholder?
+        return ERC721(prizeAddress).tokenURI(prizeTokenId);
+    }
+
     function initialize(
         uint  initialNumTickets, 
         uint  initialTicketPrice,
@@ -111,13 +122,12 @@ contract Raffle is Initializable, IERC721Receiver {
     // Not perfect, ideally we can receive the NFT in the same step as initializing
     // the contract, or *at least* through an interface that lives on the raffle itself.
     function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data) public override returns (bytes4) {
-        emit nftReceived("");
+        emit nftReceived("PRIZE RECEIVED");
 
         // kinda janky, decline any tokens past the first one donated
-        require(prizeAddress == address(0), "Already have a prize");
+        // require(false); //prizeAddress == address(0), "Already have a prize");
 
         donor = from;
-
         // now our prize can be uniquely identified
         // regardless of which "collection" it belongs to
         prizeAddress = msg.sender;
