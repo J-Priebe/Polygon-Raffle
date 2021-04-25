@@ -110,6 +110,7 @@ contract Raffle is Initializable, IERC721Receiver {
     }
 
 
+    // TODO indicate winning ticket?
     function drawWinner() public managerOnly {
         // winner can't be an unsold ticket
         uint winningTicketIndex = dangerousPseudoRandom() % numTicketsSold;

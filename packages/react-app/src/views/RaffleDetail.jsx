@@ -6,11 +6,12 @@ import {
   useContractReader, useEventListener, useFetch } from "../hooks";
 
 import { parseEther, formatEther } from "@ethersproject/units";
+import { BigNumber } from "@ethersproject/bignumber";
 
-import { Button, Input, Image } from "antd";
+
+import { Button, Input, InputNumber, Image } from "antd";
 
 export default function RaffleDetail({ provider, tx, connectedAddress }) {
-  // nneed a way to write to the address as well as read
 
   let { address } = useParams();
 
@@ -33,32 +34,33 @@ export default function RaffleDetail({ provider, tx, connectedAddress }) {
   const prizeMeta = useFetch(prizeUri);
   return (
     <div>
-      Detail view of raffle, view tickets, enter raffle, etc etc.
-      <p>Connected Address: {connectedAddress}</p>
       <p>Owned by You: {ownedByYou? ownedByYou.toString() : ""}</p>
-      <p>Adress: {address}</p>
-      <p>Prize URI: {prizeUri}</p>
-      <p>Prize metaData: {prizeMeta?JSON.stringify(prizeMeta): ''}</p>
-      <p>Prize Address... {prizeAddress}</p>
-      <p>Manager: {managerAddress}</p>
-      <p>Minting Contract Address: {ticketMinterAddress}</p>
+      <p>TODO actually show your ticket NFTs here</p>
+      <p>Could even have a secondary marketplace built right in where
+        ticket owners provide their contact info and list them for resale.
+      </p>
       <p>Tickets Sold: {numTicketsSold ? numTicketsSold.toString() : ""}</p>
       <p>Tickets Initially Available: {numInitialTickets ? numInitialTickets.toString() : ""}</p>
-      <p>Your tickets: TODO. need to either track them in raffle, maybe a function that examines them all</p>
 
-      <p>Ticket price: {ticketPrice ? formatEther(ticketPrice) : ""}</p>
+      <p>Ticket price: {ticketPrice ? formatEther(ticketPrice) : "--"} ETH</p>
       <Image src={prizeMeta?.image} />
       <div style={{ margin: 8 }}>
         Buy Tickets:
-        <Input
-          onChange={e => {
-            setNumTicketsToBuy(e.target.value);
+        <InputNumber
+          min={1}
+          onChange={v => {
+            setNumTicketsToBuy(v);
           }}
           value={numTicketsToBuy}
         />
         <Button
           onClick={() => {
-            tx(raffleClone.enter({ value: ticketPrice * numTicketsToBuy }));
+            // ticketPrice is in wei, the numbers we work with
+            // are likely outside range of safe javascript integers
+            const val = ticketPrice.mul(numTicketsToBuy);
+            // how do we handle big numbers?
+            console.log('sending value:', val);
+            tx(raffleClone.enter({ value: val }));
           }}
         >
           Enter

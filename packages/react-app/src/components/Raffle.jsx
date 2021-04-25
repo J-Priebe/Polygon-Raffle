@@ -3,19 +3,17 @@ import { useCustomContractLoader, useContractReader, useFetch } from "../hooks";
 import { Link } from "react-router-dom";
 import { Button, Divider, Input, Row, Col, Image } from "antd";
 
-import { parseEther, formatEther } from "@ethersproject/units";
+import { formatEther } from "@ethersproject/units";
 
 // this feels very Angular-like.. would like to get flux/redux in here
 // to manage the provider instead of passing it everywhere
-export default function Raffle({ raffleAddress, userAddress, provider }) {
+export default function Raffle({ raffleAddress, userAddress, provider, active }) {
   const raffleClone = useCustomContractLoader(provider, "Raffle", raffleAddress);
 
   // TODO bulk reader?
   const ticketPrice = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketPrice");
   const numTicketsSold = useContractReader({ Raffle: raffleClone }, "Raffle", "numTicketsSold");
   const numInitialTickets = useContractReader({ Raffle: raffleClone }, "Raffle", "numInitialTickets");
-  const managerAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "manager");
-  const ticketMinterAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketMaker");
 
   const numTicketsOwnedByUser = useContractReader({ Raffle: raffleClone }, "Raffle", "getTicketBalance", [userAddress]);
 
@@ -23,7 +21,7 @@ export default function Raffle({ raffleAddress, userAddress, provider }) {
 
   const prizeData = useFetch(useContractReader({ Raffle: raffleClone }, "Raffle", "getPrizeURI"));
 
-  const donorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "donorAddress");
+  const donorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "donor");
   const prizeTitle = prizeData?.name || (donorAddress ? donorAddress.slice(0, 8) + "***" : "Unnamed");
 
   return (
@@ -52,7 +50,7 @@ export default function Raffle({ raffleAddress, userAddress, provider }) {
           <h4>
             {numTicketsSold ? numTicketsSold.toString() : "--"}/
             {numInitialTickets ? numInitialTickets.toString() : "--"} tickets sold{" "}
-            {numTicketsOwnedByUser && numTicketsOwnedByUser > 0 ? `(${numTicketsOwnedByUser} owned)`:""}
+            {numTicketsOwnedByUser && numTicketsOwnedByUser > 0 ? `(${numTicketsOwnedByUser} owned)` : ""}
           </h4>
         </Col>
       </Row>
@@ -60,6 +58,23 @@ export default function Raffle({ raffleAddress, userAddress, provider }) {
         <Col>
           <h4>{ticketPrice ? formatEther(ticketPrice) : "--"} ETH</h4>
         </Col>
+        {
+          // quick hack to reuse component for won/lost raffles.
+          // might make separate components if they diverge
+          active ? (
+            <Col>
+              <Link
+                to={{
+                  pathname: `/raffle/${raffleAddress}`,
+                }}
+              >
+                <Button>Buy</Button>
+              </Link>
+            </Col>
+          ) : (
+            ""
+          )
+        }
       </Row>
     </Col>
   );

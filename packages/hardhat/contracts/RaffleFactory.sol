@@ -12,12 +12,12 @@ import "./Raffle.sol";
 //     uint256 public randomResult;
 
 //     constructor(
-//         address _vrfCoordinator, 
+//         address _vrfCoordinator,
 //         address _link
 //     ) VRFConsumerBase(_vrfCoordinator, _link) public {
 //     }
 
-//     /** 
+//     /**
 //      * Requests randomness from a user-provided seed
 //      */
 //     function getRandomNumber(uint256 userProvidedSeed) public returns (bytes32 requestId) {
@@ -33,8 +33,6 @@ import "./Raffle.sol";
 //     }
 // }
 
-
-
 contract RaffleFactory {
     address immutable raffleImplementation;
 
@@ -45,17 +43,17 @@ contract RaffleFactory {
     }
 
     function createRaffle(
-        uint  initialNumTickets, 
-        uint  initialTicketPrice,
+        uint256 initialNumTickets,
+        uint256 initialTicketPrice,
         address payable benefactor,
         string calldata benefactorName
     ) external returns (address) {
         address clone = Clones.clone(raffleImplementation);
         Raffle(clone).initialize(
-            initialNumTickets, 
+            initialNumTickets,
             initialTicketPrice,
             msg.sender,
-            benefactor, 
+            benefactor,
             benefactorName
         );
 
@@ -77,31 +75,30 @@ contract RaffleFactory {
         // because you can't use dynamic or storage arrays in a view.
         // This means the client will need to filter out 0-Address entries.
         address[] memory managed = new address[](raffles.length);
-        uint counter = 0;
+        uint256 counter = 0;
 
-        for (uint i=0; i < raffles.length; i++) {
+        for (uint256 i = 0; i < raffles.length; i++) {
             Raffle r = Raffle(raffles[i]);
             address raffleManager = r.manager();
             if (raffleManager == msg.sender) {
                 managed[counter] = raffles[i];
-                counter ++;
+                counter++;
             }
         }
         return managed;
     }
 
-
     // raffles that have a prize but no winner yet
     // We hide raffles without a prize set outside manager scope
     function getActiveRaffles() public view returns (address[] memory) {
         address[] memory active = new address[](raffles.length);
-        uint counter = 0;
+        uint256 counter = 0;
 
-        for (uint i=0; i < raffles.length; i++) {
+        for (uint256 i = 0; i < raffles.length; i++) {
             Raffle r = Raffle(raffles[i]);
             if (r.prizeAddress() != address(0) && r.winner() == address(0)) {
                 active[counter] = raffles[i];
-                counter ++;
+                counter++;
             }
         }
         return active;
@@ -111,12 +108,12 @@ contract RaffleFactory {
     // what about expired raffles that nobody bought tickets for?
     function getCompletedRaffles() public view returns (address[] memory) {
         address[] memory completed = new address[](raffles.length);
-        uint counter = 0;
-        for (uint i=0; i < raffles.length; i++) {
+        uint256 counter = 0;
+        for (uint256 i = 0; i < raffles.length; i++) {
             Raffle r = Raffle(raffles[i]);
-            if ( r.winner() != address(0)) {
+            if (r.winner() != address(0)) {
                 completed[counter] = raffles[i];
-                counter ++;
+                counter++;
             }
         }
         return completed;
