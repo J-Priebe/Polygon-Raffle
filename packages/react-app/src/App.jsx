@@ -12,16 +12,13 @@ import {
   useGasPrice,
   useUserProvider,
   useContractLoader,
-  useContractReader,
   useBalance,
 } from "./hooks";
-import { Header, Account, Faucet, Contract, ThemeSwitch } from "./components";
+import { Header, Account, Faucet, ThemeSwitch } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
-//import Hints from "./Hints";
-import { Hints, ExampleUI, Subgraph, RaffleDetail, Admin } from "./views";
-import { useThemeSwitcher } from "react-css-theme-switcher";
-import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
+import { Home, RaffleDetail, Admin } from "./views";
+import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -34,6 +31,12 @@ import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants"
 
     You should get your own Infura.io ID and put it in `constants.js`
     (this is your connection to the main Ethereum network for ENS etc.)
+
+    // Deployment:
+    yarn run generate will create a deployer account in packages/hardhat
+    yarn run build && yarn run surge/s3/ipfs
+
+
 */
 
 /// 📡 What chain are your contracts deployed to?
@@ -98,9 +101,6 @@ function App(props) {
 
   // If you want to make 🔐 write transactions to your contracts, use the userProvider:
   const writeContracts = useContractLoader(userProvider);
-
-  // keep track of a variable from the contract in the local React state:
-  const raffles = useContractReader(readContracts, "RaffleFactory", "getAllRaffles");
 
   //📟 Listen for broadcast events
   // const createRaffleEvents = useEventListener(readContracts, "RaffleFactory", "CreateRaffle", localProvider, 1);
@@ -220,16 +220,6 @@ function App(props) {
               Home
             </Link>
           </Menu.Item>
-          <Menu.Item key="/hints">
-            <Link
-              onClick={() => {
-                setRoute("/hints");
-              }}
-              to="/hints"
-            >
-              Hints
-            </Link>
-          </Menu.Item>
           <Menu.Item key="/admin">
             <Link
               onClick={() => {
@@ -240,21 +230,11 @@ function App(props) {
               Admin
             </Link>
           </Menu.Item>
-          <Menu.Item key="/subgraph">
-            <Link
-              onClick={() => {
-                setRoute("/subgraph");
-              }}
-              to="/subgraph"
-            >
-              Subgraph
-            </Link>
-          </Menu.Item>
         </Menu>
 
         <Switch>
           <Route exact path="/">
-            <ExampleUI
+            <Home
               address={address}
               mainnetProvider={mainnetProvider}
               localProvider={localProvider}
@@ -263,7 +243,6 @@ function App(props) {
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
-              raffles={raffles}
             />
           </Route>
           <Route name="raffleDetail" path="/raffle/:address">
@@ -276,24 +255,9 @@ function App(props) {
           <Route name="admin" path="/admin">
             <Admin
               tx={tx}
+              readContracts={readContracts}
               writeContracts={writeContracts}
               provider={userProvider}
-            />
-          </Route>
-          <Route path="/hints">
-            <Hints
-              address={address}
-              yourLocalBalance={yourLocalBalance}
-              mainnetProvider={mainnetProvider}
-              price={price}
-            />
-          </Route>
-          <Route path="/subgraph">
-            <Subgraph
-              subgraphUri={props.subgraphUri}
-              tx={tx}
-              writeContracts={writeContracts}
-              mainnetProvider={mainnetProvider}
             />
           </Route>
         </Switch>

@@ -18,7 +18,13 @@ contract Raffle is Initializable, IERC721Receiver {
 
     address public manager;
     address payable public benefactor;
+    string public benefactorName;
+
     address public donor;
+
+    address public winner;
+    // should we include a donor moniker too? I feel like
+    // that should be part of the NFT metadata spec...
 
     event nftReceived(string msg);
 
@@ -45,10 +51,12 @@ contract Raffle is Initializable, IERC721Receiver {
         uint  initialNumTickets, 
         uint  initialTicketPrice,
         address raffleManager,
-        address payable raffleBenefactor
+        address payable raffleBenefactor,
+        string memory raffleBenefactorName
     ) public {
         manager = raffleManager;
         benefactor = raffleBenefactor;
+        benefactorName = raffleBenefactorName;
 
         ticketMaker = new RaffleTicket();
         
@@ -105,13 +113,12 @@ contract Raffle is Initializable, IERC721Receiver {
     function drawWinner() public managerOnly {
         // winner can't be an unsold ticket
         uint winningTicketIndex = dangerousPseudoRandom() % numTicketsSold;
-        // charity gets the prize moneys
-        // TODO use safetransfer instead
-        benefactor.send(address(this).balance);
+        
+        // benefactor gets the ticket revenue
+        benefactor.call{value:address(this).balance}('');
 
         // owner of the winning ticket gets the prize NFT
-        address winner = ticketMaker.ownerOf(winningTicketIndex);
-
+        winner = ticketMaker.ownerOf(winningTicketIndex);
         ERC721(prizeAddress).safeTransferFrom(
             address(this),
             winner,

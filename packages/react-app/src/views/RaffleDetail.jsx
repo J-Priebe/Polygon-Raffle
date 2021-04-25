@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { 
-  useLoadContractByAddress, 
+  useCustomContractLoader, 
   useContractReader, useEventListener, useFetch } from "../hooks";
 
 import { parseEther, formatEther } from "@ethersproject/units";
@@ -16,7 +16,7 @@ export default function RaffleDetail({ provider, tx, connectedAddress }) {
 
   const [numTicketsToBuy, setNumTicketsToBuy] = useState(1);
 
-  const raffleClone = useLoadContractByAddress("Raffle", address, provider);
+  const raffleClone = useCustomContractLoader(provider, "Raffle", address);
 
   // a bulk reader would be dope.. bunch of calls that returns a dict
   const ticketPrice = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketPrice");
