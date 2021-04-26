@@ -13,6 +13,7 @@ export default function Transactor(provider, gasPrice, etherscan) {
   if (typeof provider !== "undefined") {
     // eslint-disable-next-line consistent-return
     return async tx => {
+      console.log('doing tx thing', JSON.stringify(tx))
       const signer = provider.getSigner();
       const network = await provider.getNetwork();
       console.log("network", network);

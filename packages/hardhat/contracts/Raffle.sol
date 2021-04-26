@@ -30,7 +30,12 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     // that should be part of the NFT metadata spec...
 
     event nftReceived(string msg);
-
+    event drawWinnerCalled(address caller);
+    event getRandomNumberCalled(uint seed);
+    event requestRandomnessCalled();
+    event fulfillRandomnessCalled(bytes32 requestId, uint256 randomness);
+    event declareWinnerCalled();
+    
     // CHAINLINK
     bytes32 keyHash;
     uint256 fee;
@@ -44,20 +49,23 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     // our network. i.e., mumbai testnet
     // coinrdator: address of smart contract which verifies our result
     constructor(
-        address _vrfCoordinator,
-        address _link
-    ) VRFConsumerBase(_vrfCoordinator, _link) public {
-        // do I do this in init instead?
-        // I think you can leave in constructor
-        // as it applies to all instances of this contract
+        // address _vrfCoordinator,
+        // address _link
+    ) VRFConsumerBase(
+        0x3d2341ADb2D31f1c5530cDC622016af293177AE0, 
+        0xb0897686c545045aFc77CF20eC7A532E3120E0F1) public {
+
+        // applies to all instances of this contract
         keyHash = 0xf86195cf7690c55907b2b611ebb7343a6f649bff128701cc542f0569e2c549da;
-        fee = 0.0001 * 10 ** 18; // 0.1 LINK
+        fee = 0.0001 * 10 ** 18; // 0.0001 LINK
     }
 
 
     // step 1
     // manager calls the draw
     function drawWinner() public managerOnly {
+        emit drawWinnerCalled(msg.sender);
+
         require(!drawInProgress, "draw is already in progress");
         require(winner == address(0), "winner already picked");
 
@@ -69,16 +77,20 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     // step 2
     // initiated when raffle calls draw
     function getRandomNumber(uint256 userProvidedSeed) public returns (bytes32 requestId) {
+        emit getRandomNumberCalled(userProvidedSeed);
         require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
         drawInProgress = true;
         // You could use the request ID if you have multiple
         // randomness requests in a given contract, but we do not
-        return requestRandomness(keyHash, fee, userProvidedSeed);
+        bytes32 req = requestRandomness(keyHash, fee, userProvidedSeed);
+        emit requestRandomnessCalled();
+        return req;
     }
 
     // step 3 (called by the coordinator)
     // finalizes the lottery (selects winner based off random value)
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
+        emit fulfillRandomnessCalled(requestId, randomness);
         randomResult = randomness;
         declareWinner();
         drawInProgress = false;
@@ -88,6 +100,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     function declareWinner() private {
         // use our random number to select a winner
         // from the pool of sold tickets
+        emit declareWinnerCalled();
         uint winningTicketIndex = randomResult % numTicketsSold;
         
         // benefactor gets the ticket revenue
@@ -103,14 +116,14 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     }
 
 
-    function getRandomnessSeed() private view returns (uint) {
+    function getRandomnessSeed() private view returns (uint256) {
         // NOTE: this is theoretically gameable, 
         // all of the inputs are public
         // if you can predict the time at which it will be executed
         // TLDR this is a toy only
         // look into chainlink VRF for true randomness
         //https://docs.chain.link/docs/get-a-random-number
-        return uint(keccak256(abi.encodePacked(
+        return uint256(keccak256(abi.encodePacked(
             block.difficulty,
             block.timestamp
         )));

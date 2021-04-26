@@ -16,3 +16,4 @@ export { default as useNonce } from "./Nonce";
 export { default as useTokenList } from "./TokenList";
 export { default as useDebounce } from "./Debounce";
 export { default as useFetch } from "./Fetch";
+export { default as useERC20ContractLoader } from "./ERC20ContractLoader";

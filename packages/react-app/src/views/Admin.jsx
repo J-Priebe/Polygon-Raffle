@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React, { useState } from "react";
-import { SAMPLE_JSON_URI } from "../constants";
 import { Button, Input, Divider } from "antd";
 import { parseEther, formatEther } from "@ethersproject/units";
 import { AddressZero } from "@ethersproject/constants";
@@ -28,32 +27,11 @@ export default function Admin({ tx, provider }) {
   return (
     <div>
       <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
-        <h2>Send a Dummy Prize NFT to address</h2>
-        uri: {SAMPLE_JSON_URI}
-        <div style={{ margin: 8 }}>
-          <AddressInput
-            // ensProvider={provider}
-            value={dest}
-            onChange={addr => {
-              setDest(addr);
-            }}
-          />
-          <Button
-            onClick={() => {
-              console.log("sending prize to", dest, SAMPLE_JSON_URI);
-              tx(contracts.SamplePrizeNFT.sendPrize(dest, SAMPLE_JSON_URI));
-            }}
-          >
-            Send Prize
-          </Button>
-        </div>
-      </div>
-      <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
         <h2> Your managed raffles: </h2>
         {managedRaffles.map(raffleAddress => {
           return (
             <div key={raffleAddress}>
-              <ManagedRaffle raffleAddress={raffleAddress} provider={provider} tx={tx} />
+              <ManagedRaffle raffleAddress={raffleAddress} provider={provider} tx={tx} contracts={contracts} />
               <Divider />
             </div>
           );
