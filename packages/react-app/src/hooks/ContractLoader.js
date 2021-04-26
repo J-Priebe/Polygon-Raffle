@@ -31,6 +31,7 @@ const loadContract = (contractName, signer) => {
     require(`../contracts/${contractName}.abi.js`),
     signer,
   );
+  console.log('contract listeners: ', contractName, newContract.listeners())
   try {
     newContract.bytecode = require(`../contracts/${contractName}.bytecode.js`);
   } catch (e) {

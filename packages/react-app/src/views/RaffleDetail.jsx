@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { 
   useCustomContractLoader, 
-  useContractReader, useEventListener, useFetch } from "../hooks";
+  useContractReader, useFetch } from "../hooks";
 
 import { parseEther, formatEther } from "@ethersproject/units";
 import { BigNumber } from "@ethersproject/bignumber";

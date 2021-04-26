@@ -7,7 +7,10 @@ import "@openzeppelin/contracts/proxy/Initializable.sol";
 
 import "./RaffleTicket.sol";
 
-contract Raffle is Initializable, IERC721Receiver {
+import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
+
+
+contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     RaffleTicket public ticketMaker;
     uint public numInitialTickets;
     uint public ticketPrice;
@@ -27,6 +30,93 @@ contract Raffle is Initializable, IERC721Receiver {
     // that should be part of the NFT metadata spec...
 
     event nftReceived(string msg);
+
+    // CHAINLINK
+    bytes32 keyHash;
+    uint256 fee;
+
+    // set true while we are awaiting randomness from the oracle
+    bool private drawInProgress;
+
+    uint256 public randomResult;
+
+    // hash, coordinator and token addresses depend on
+    // our network. i.e., mumbai testnet
+    // coinrdator: address of smart contract which verifies our result
+    constructor(
+        address _vrfCoordinator,
+        address _link
+    ) VRFConsumerBase(_vrfCoordinator, _link) public {
+        // do I do this in init instead?
+        // I think you can leave in constructor
+        // as it applies to all instances of this contract
+        keyHash = 0xf86195cf7690c55907b2b611ebb7343a6f649bff128701cc542f0569e2c549da;
+        fee = 0.0001 * 10 ** 18; // 0.1 LINK
+    }
+
+
+    // step 1
+    // manager calls the draw
+    function drawWinner() public managerOnly {
+        require(!drawInProgress, "draw is already in progress");
+        require(winner == address(0), "winner already picked");
+
+        uint seed = getRandomnessSeed();
+        // ask chainlink for a random number
+        getRandomNumber(seed);
+    }
+
+    // step 2
+    // initiated when raffle calls draw
+    function getRandomNumber(uint256 userProvidedSeed) public returns (bytes32 requestId) {
+        require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+        drawInProgress = true;
+        // You could use the request ID if you have multiple
+        // randomness requests in a given contract, but we do not
+        return requestRandomness(keyHash, fee, userProvidedSeed);
+    }
+
+    // step 3 (called by the coordinator)
+    // finalizes the lottery (selects winner based off random value)
+    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
+        randomResult = randomness;
+        declareWinner();
+        drawInProgress = false;
+    }
+
+    // step 4
+    function declareWinner() private {
+        // use our random number to select a winner
+        // from the pool of sold tickets
+        uint winningTicketIndex = randomResult % numTicketsSold;
+        
+        // benefactor gets the ticket revenue
+        benefactor.call{value:address(this).balance}('');
+
+        // owner of the winning ticket gets the prize NFT
+        winner = ticketMaker.ownerOf(winningTicketIndex);
+        ERC721(prizeAddress).safeTransferFrom(
+            address(this),
+            winner,
+            prizeTokenId
+        );
+    }
+
+
+    function getRandomnessSeed() private view returns (uint) {
+        // NOTE: this is theoretically gameable, 
+        // all of the inputs are public
+        // if you can predict the time at which it will be executed
+        // TLDR this is a toy only
+        // look into chainlink VRF for true randomness
+        //https://docs.chain.link/docs/get-a-random-number
+        return uint(keccak256(abi.encodePacked(
+            block.difficulty,
+            block.timestamp
+        )));
+    }
+
+
 
     function getTicketOwner(uint256 ticketId) public view returns (address) {
         return ticketMaker.ownerOf(ticketId);
@@ -64,6 +154,8 @@ contract Raffle is Initializable, IERC721Receiver {
         ticketPrice = initialTicketPrice;
         numTicketsSold = 0;
 
+        drawInProgress = false;
+
         // TODO figure out if it's possible to approve and transfer
         // prize NFT in the init call, or at least through the Raffle interface
         // ERC721(prizeAddress).safeTransferFrom(
@@ -82,19 +174,6 @@ contract Raffle is Initializable, IERC721Receiver {
         numTicketsSold ++;
     }
 
-    // To be replaced with chainlink
-    function dangerousPseudoRandom() private view returns (uint) {
-        // NOTE: this is theoretically gameable, 
-        // all of the inputs are public
-        // if you can predict the time at which it will be executed
-        // TLDR this is a toy only
-        // look into chainlink VRF for true randomness
-        //https://docs.chain.link/docs/get-a-random-number
-        return uint(keccak256(abi.encodePacked(
-            block.difficulty,
-            block.timestamp
-        )));
-    }
 
     function enter() public payable {
         uint numTickets = msg.value / ticketPrice;
@@ -107,24 +186,6 @@ contract Raffle is Initializable, IERC721Receiver {
         for (uint i=0; i < numTickets; i++) {
             sendAvailableTicket(msg.sender);
         }
-    }
-
-
-    // TODO indicate winning ticket?
-    function drawWinner() public managerOnly {
-        // winner can't be an unsold ticket
-        uint winningTicketIndex = dangerousPseudoRandom() % numTicketsSold;
-        
-        // benefactor gets the ticket revenue
-        benefactor.call{value:address(this).balance}('');
-
-        // owner of the winning ticket gets the prize NFT
-        winner = ticketMaker.ownerOf(winningTicketIndex);
-        ERC721(prizeAddress).safeTransferFrom(
-            address(this),
-            winner,
-            prizeTokenId
-        );
     }
 
     // Not perfect, ideally we can receive the NFT in the same step as initializing

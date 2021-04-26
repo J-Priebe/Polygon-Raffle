@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import usePoller from "./Poller";
 
-const DEBUG = false;
+const DEBUG = true;
 
 /*
   ~ What it does? ~
@@ -55,7 +55,7 @@ export default function useContractReader(contracts, contractName, functionName,
           setValue(newValue);
         }
       } catch (e) {
-        console.log(e);
+        console.log('ContractReader Error', e, `ContractName: ${contractName}`, `FunctionName: ${functionName}`, )
       }
     }
   }, adjustPollTime, contracts && contracts[contractName]);

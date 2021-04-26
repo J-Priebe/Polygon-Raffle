@@ -46,14 +46,17 @@ const targetNetwork = NETWORKS["localhost"]; // <------- select your target fron
 const DEBUG = true;
 
 // 🛰 providers
-if (DEBUG) console.log("📡 Connecting to Mainnet Ethereum");
 
 // WHY DO WE NEED SO MANY PROVIDERS !????
 // AND why is this spamming local chain/infura multiple times a second...
 // eth_chainId, eth_getBalance, eth_blockNumber are the culprits
 
-const scaffoldEthProvider = new JsonRpcProvider("https://rpc.scaffoldeth.io:48544");
-const mainnetInfura = new JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_ID);
+// const scaffoldEthProvider = new JsonRpcProvider("https://rpc.scaffoldeth.io:48544");
+// const mainnetInfura = new JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_ID);
+
+// Why do we need a separate local provider? 
+// it's used as a backup for when metamask is not connected. 
+// but it's inefficient. maybe reduce polling frequency?
 
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = targetNetwork.rpcUrl;
@@ -61,26 +64,28 @@ const localProviderUrl = targetNetwork.rpcUrl;
 const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
 if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
+localProvider.pollingInterval = 10000;
 
 // 🔭 block explorer URL
 const blockExplorer = targetNetwork.blockExplorer;
 
 function App(props) {
-  const mainnetProvider = scaffoldEthProvider && scaffoldEthProvider._network ? scaffoldEthProvider : mainnetInfura;
+  // const mainnetProvider = scaffoldEthProvider && scaffoldEthProvider._network ? scaffoldEthProvider : mainnetInfura;
   const [injectedProvider, setInjectedProvider] = useState();
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangePrice(targetNetwork, mainnetProvider);
+  // const price = useExchangePrice(targetNetwork, mainnetProvider);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
   const gasPrice = useGasPrice(targetNetwork, "fast");
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProvider = useUserProvider(injectedProvider, localProvider);
+  userProvider.pollingInterval = 10000;
   const address = useUserAddress(userProvider);
 
   // You can warn the user if you would like them to be on a specific network
-  let localChainId = localProvider && localProvider._network && localProvider._network.chainId;
-  let selectedChainId = userProvider && userProvider._network && userProvider._network.chainId;
+  let localChainId = localProvider?._network?.chainId;
+  let selectedChainId = userProvider?._network?.chainId;
 
   // For more hooks, check out 🔗eth-hooks at: https://www.npmjs.com/package/eth-hooks
 
@@ -114,10 +119,12 @@ function App(props) {
   // ☝️ These effects will log your major set up and upcoming transferEvents- and balance changes
   //
   useEffect(() => {
-    if (DEBUG && mainnetProvider && address && selectedChainId && yourLocalBalance && readContracts && writeContracts) {
+    if (DEBUG && address && selectedChainId && yourLocalBalance && readContracts && writeContracts) {
       console.log("_____________________________________ 🏗 scaffold-eth _____________________________________");
-      console.log("🌎 mainnetProvider", mainnetProvider);
+      // console.log("🌎 mainnetProvider", mainnetProvider);
       console.log("🏠 localChainId", localChainId);
+      console.log("localProvider", localProvider);
+      console.log("userProvider", userProvider);
       console.log("👩‍💼 selected address:", address);
       console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
       console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
@@ -160,6 +167,7 @@ function App(props) {
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
+    // Wrapper for transforming a web3 provider (like metamask) ethers
     setInjectedProvider(new Web3Provider(provider));
   }, [setInjectedProvider]);
 
@@ -236,10 +244,10 @@ function App(props) {
           <Route exact path="/">
             <Home
               address={address}
-              mainnetProvider={mainnetProvider}
+              // mainnetProvider={mainnetProvider}
               localProvider={localProvider}
               yourLocalBalance={yourLocalBalance}
-              price={price}
+              // price={price}
               tx={tx}
               writeContracts={writeContracts}
               readContracts={readContracts}
@@ -271,8 +279,8 @@ function App(props) {
           address={address}
           localProvider={localProvider}
           userProvider={userProvider}
-          mainnetProvider={mainnetProvider}
-          price={price}
+          // mainnetProvider={mainnetProvider}
+          // price={price}
           web3Modal={web3Modal}
           loadWeb3Modal={loadWeb3Modal}
           logoutOfWeb3Modal={logoutOfWeb3Modal}
@@ -288,7 +296,10 @@ function App(props) {
             {
               /*  if the local provider has a signer, let's show the faucet:  */
               faucetAvailable ? (
-                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+                <Faucet localProvider={localProvider} 
+                // price={price} 
+                // ensProvider={mainnetProvider} 
+                />
               ) : (
                 ""
               )

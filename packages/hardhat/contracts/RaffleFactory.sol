@@ -6,32 +6,6 @@ import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
 
 import "./Raffle.sol";
 
-// // Chainlink scratch
-// contract RandomGenerator is VRFConsumerBase {
-
-//     uint256 public randomResult;
-
-//     constructor(
-//         address _vrfCoordinator,
-//         address _link
-//     ) VRFConsumerBase(_vrfCoordinator, _link) public {
-//     }
-
-//     /**
-//      * Requests randomness from a user-provided seed
-//      */
-//     function getRandomNumber(uint256 userProvidedSeed) public returns (bytes32 requestId) {
-//         require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
-//         return requestRandomness(keyHash, fee, userProvidedSeed);
-//     }
-
-//     /**
-//      * Callback function used by VRF Coordinator
-//      */
-//     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-//         randomResult = randomness;
-//     }
-// }
 
 contract RaffleFactory {
     address immutable raffleImplementation;
@@ -39,7 +13,12 @@ contract RaffleFactory {
     address[] public raffles;
 
     constructor() public {
-        raffleImplementation = address(new Raffle());
+        // Mumbai testnet chainlink coordinator and token
+        // contract addresses
+        raffleImplementation = address(new Raffle(
+            0x3d2341ADb2D31f1c5530cDC622016af293177AE0,
+            0xb0897686c545045aFc77CF20eC7A532E3120E0F1
+        ));
     }
 
     function createRaffle(

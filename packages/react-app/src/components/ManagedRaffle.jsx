@@ -32,6 +32,36 @@ export default function ManagedRaffle({ raffleAddress, provider, tx }) {
           </div>
         )}
       </Row>
+      <Row>
+        {winnerDeclared ? (
+          `Winner: ${winnerAddress}`
+        ) : (
+          <div>
+            <Button
+              onClick={() => {
+                tx(raffleClone.drawWinner());
+              }}
+            >
+              Fund with LINK
+            </Button>
+          </div>
+        )}
+      </Row>
+      <Row>
+        {winnerDeclared ? (
+          `Winner: ${winnerAddress}`
+        ) : (
+          <div>
+            <Button
+              onClick={() => {
+                tx(raffleClone.drawWinner());
+              }}
+            >
+              Send Dummy NFT Prize
+            </Button>
+          </div>
+        )}
+      </Row>
     </div>
   );
 }
