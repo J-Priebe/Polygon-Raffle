@@ -16,7 +16,7 @@ export const DAI_ABI = [{"inputs":[{"internalType":"uint256","name":"chainId_","
 
 export const NETWORK = (chainId)=>{
   for(let n in NETWORKS){
-    if(NETWORKS[n].chainId==chainId){
+    if(NETWORKS[n].chainId===chainId){
       return NETWORKS[n]
     }
   }

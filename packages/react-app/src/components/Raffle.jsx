@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { useCustomContractLoader, useContractReader, useFetch } from "../hooks";
 import { Link } from "react-router-dom";
-import { Button, Divider, Input, Row, Col, Image } from "antd";
+import { Button, Row, Col, Image } from "antd";
 
 import { formatEther } from "@ethersproject/units";
 

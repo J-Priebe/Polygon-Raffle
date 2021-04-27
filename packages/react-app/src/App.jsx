@@ -36,7 +36,7 @@ import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS["localhost"]; 
+const targetNetwork = NETWORKS["mumbai"]; 
 
 // 🔭 block explorer URL
 const blockExplorer = targetNetwork.blockExplorer;
