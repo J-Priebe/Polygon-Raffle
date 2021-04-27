@@ -26,6 +26,9 @@ export default function Admin({ tx, provider }) {
 
   return (
     <div>
+      <div>
+        Raffle Management Contract Address: {contracts?.RaffleFactory?.address}
+      </div>
       <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
         <h2> Your managed raffles: </h2>
         {managedRaffles.map(raffleAddress => {

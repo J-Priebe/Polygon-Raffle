@@ -8,13 +8,13 @@ import { AddressZero } from "@ethersproject/constants";
 
 import { useContractReader, useCustomContractLoader, useFetch } from "../hooks";
 
-export default function Home({ address, localProvider, mainnetProvider, tx, readContracts, writeContracts }) {
+export default function Home({ address, provider, contracts}) {
   // Contract-level filtering confines us to static arrays,
   // so we have to filter out the Address-Zero entries here
-  const completedRaffles = (useContractReader(readContracts, "RaffleFactory", "getCompletedRaffles") || []).filter(
+  const completedRaffles = (useContractReader(contracts, "RaffleFactory", "getCompletedRaffles") || []).filter(
     r => r !== AddressZero,
   );
-  const activeRaffles = (useContractReader(readContracts, "RaffleFactory", "getActiveRaffles") || []).filter(
+  const activeRaffles = (useContractReader(contracts, "RaffleFactory", "getActiveRaffles") || []).filter(
     r => r !== AddressZero,
   );
 
@@ -24,7 +24,7 @@ export default function Home({ address, localProvider, mainnetProvider, tx, read
         <h2>Current Raffles:</h2>
         <Row>
           {activeRaffles.map(raffleAddress => (
-              <Raffle key={raffleAddress} active={true} raffleAddress={raffleAddress} provider={localProvider} userAddress={address} />
+              <Raffle key={raffleAddress} active={true} raffleAddress={raffleAddress} provider={provider} userAddress={address} />
           ))}
         </Row>
         <Divider />
@@ -32,7 +32,7 @@ export default function Home({ address, localProvider, mainnetProvider, tx, read
         <h2> Past Raffles: </h2>
         <Row>
           {completedRaffles.map(raffleAddress => (
-              <Raffle key={raffleAddress} active={false} raffleAddress={raffleAddress} provider={localProvider} userAddress={address} />
+              <Raffle key={raffleAddress} active={false} raffleAddress={raffleAddress} provider={provider} userAddress={address} />
           ))}
         </Row>
       </div>

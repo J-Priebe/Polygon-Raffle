@@ -1,20 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import "antd/dist/antd.css";
-import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Web3Provider } from "@ethersproject/providers";
 import "./App.css";
-import { Row, Col, Button, Menu, Alert, Switch as SwitchD } from "antd";
+import { Row, Col, Button, Menu, Alert } from "antd";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
 import {
-  useExchangePrice,
   useGasPrice,
-  useUserProvider,
   useContractLoader,
   useBalance,
 } from "./hooks";
-import { Header, Account, Faucet, ThemeSwitch } from "./components";
+import { Header, Account, Faucet } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { Home, RaffleDetail, Admin } from "./views";
@@ -35,106 +33,51 @@ import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
     // Deployment:
     yarn run generate will create a deployer account in packages/hardhat
     yarn run build && yarn run surge/s3/ipfs
-
-
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS["localhost"]; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
-
-// 😬 Sorry for all the console logging
-const DEBUG = true;
-
-// 🛰 providers
-
-// WHY DO WE NEED SO MANY PROVIDERS !????
-// AND why is this spamming local chain/infura multiple times a second...
-// eth_chainId, eth_getBalance, eth_blockNumber are the culprits
-
-// const scaffoldEthProvider = new JsonRpcProvider("https://rpc.scaffoldeth.io:48544");
-// const mainnetInfura = new JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_ID);
-
-// Why do we need a separate local provider? 
-// it's used as a backup for when metamask is not connected. 
-// but it's inefficient. maybe reduce polling frequency?
-
-// 🏠 Your local provider is usually pointed at your local blockchain
-const localProviderUrl = targetNetwork.rpcUrl;
-// as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
-const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
-if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
-const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
-localProvider.pollingInterval = 10000;
+const targetNetwork = NETWORKS["localhost"]; 
 
 // 🔭 block explorer URL
 const blockExplorer = targetNetwork.blockExplorer;
 
 function App(props) {
-  // const mainnetProvider = scaffoldEthProvider && scaffoldEthProvider._network ? scaffoldEthProvider : mainnetInfura;
-  const [injectedProvider, setInjectedProvider] = useState();
-
-  /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  // const price = useExchangePrice(targetNetwork, mainnetProvider);
+  
+  // TODO
+  // one provider to rule them all. enough of this burner stuff.
+  // if provider is null we do nothing.
+  // and if there is no metamask, we'll create a local provider.
+  // where the two are managed by a singular effect so we only have one at a time
+  // const foo = useGradualProvider(window.ethereum);
+  const [provider, setProvider] = useState();
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
   const gasPrice = useGasPrice(targetNetwork, "fast");
-  // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
-  const userProvider = useUserProvider(injectedProvider, localProvider);
-  userProvider.pollingInterval = 10000;
-  const address = useUserAddress(userProvider);
+
+  const address = useUserAddress(provider);
 
   // You can warn the user if you would like them to be on a specific network
-  let localChainId = localProvider?._network?.chainId;
-  let selectedChainId = userProvider?._network?.chainId;
-
-  // For more hooks, check out 🔗eth-hooks at: https://www.npmjs.com/package/eth-hooks
+  let selectedChainId = provider?._network?.chainId;
+  let localChainId = targetNetwork?.chainId;
 
   // The transactor wraps transactions and provides notificiations
-  const tx = Transactor(userProvider, gasPrice);
+  const tx = Transactor(provider, gasPrice);
 
   // Faucet Tx can be used to send funds from the faucet
-  const faucetTx = Transactor(localProvider, gasPrice);
+  const faucetTx = Transactor(provider, gasPrice);
 
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
-  const yourLocalBalance = useBalance(localProvider, address);
+  const yourLocalBalance = useBalance(provider, address);
 
   // // Just plug in different 🛰 providers to get your balance on different chains:
   // const yourMainnetBalance = useBalance(mainnetProvider, address);
 
   // Load in your local 📝 contract and read a value from it:
-  const readContracts = useContractLoader(localProvider);
+  const contracts = useContractLoader(provider);
 
-  // If you want to make 🔐 write transactions to your contracts, use the userProvider:
-  const writeContracts = useContractLoader(userProvider);
-
-  //📟 Listen for broadcast events
-  // const createRaffleEvents = useEventListener(readContracts, "RaffleFactory", "CreateRaffle", localProvider, 1);
-
-  /*
-  const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
-  console.log("🏷 Resolved austingriffith.eth as:",addressFromENS)
-  */
-
-  //
-  // ☝️ These effects will log your major set up and upcoming transferEvents- and balance changes
-  //
-  useEffect(() => {
-    if (DEBUG && address && selectedChainId && yourLocalBalance && readContracts && writeContracts) {
-      console.log("_____________________________________ 🏗 scaffold-eth _____________________________________");
-      // console.log("🌎 mainnetProvider", mainnetProvider);
-      console.log("🏠 localChainId", localChainId);
-      console.log("localProvider", localProvider);
-      console.log("userProvider", userProvider);
-      console.log("👩‍💼 selected address:", address);
-      console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
-      console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
-      console.log("📝 readContracts", readContracts);
-      console.log("🔐 writeContracts", writeContracts);
-    }
-  }, [localChainId]);
 
   let networkDisplay = "";
-  if (localChainId && selectedChainId && localChainId != selectedChainId) {
+  if (targetNetwork?.chainId && selectedChainId && targetNetwork.chainId != selectedChainId) {
     networkDisplay = (
       <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
         <Alert
@@ -147,7 +90,7 @@ function App(props) {
               </b>{" "}
               selected and you need to be on{" "}
               <b>
-                {NETWORK(localChainId)?.name} ({localChainId})
+                {NETWORK(targetNetwork?.chainId)?.name} ({localChainId})
               </b>
               .
             </div>
@@ -167,9 +110,9 @@ function App(props) {
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
-    // Wrapper for transforming a web3 provider (like metamask) ethers
-    setInjectedProvider(new Web3Provider(provider));
-  }, [setInjectedProvider]);
+    // Wrapper for transforming a web3 provider (like metamask)
+    setProvider(new Web3Provider(provider));
+  }, [setProvider]);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
@@ -183,14 +126,14 @@ function App(props) {
   }, [setRoute]);
 
   let faucetHint = "";
-  const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name == "localhost";
+  const faucetAvailable = provider && provider.connection && targetNetwork.name == "localhost";
 
   const [faucetClicked, setFaucetClicked] = useState(false);
   if (
     !faucetClicked &&
-    localProvider &&
-    localProvider._network &&
-    localProvider._network.chainId == 31337 &&
+    provider &&
+    provider._network &&
+    provider._network.chainId == 31337 &&
     yourLocalBalance &&
     formatEther(yourLocalBalance) <= 0
   ) {
@@ -244,18 +187,13 @@ function App(props) {
           <Route exact path="/">
             <Home
               address={address}
-              // mainnetProvider={mainnetProvider}
-              localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              // price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
+              provider={provider}
+              contracts={contracts}
             />
           </Route>
           <Route name="raffleDetail" path="/raffle/:address">
             <RaffleDetail 
-              provider={userProvider} 
+              provider={provider} 
               tx={tx} 
               connectedAddress={address}
             />
@@ -263,23 +201,17 @@ function App(props) {
           <Route name="admin" path="/admin">
             <Admin
               tx={tx}
-              readContracts={readContracts}
-              writeContracts={writeContracts}
-              provider={userProvider}
+              provider={provider}
             />
           </Route>
         </Switch>
       </BrowserRouter>
 
-      <ThemeSwitch />
-
       {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
       <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
         <Account
           address={address}
-          localProvider={localProvider}
-          userProvider={userProvider}
-          // mainnetProvider={mainnetProvider}
+          provider={provider}
           // price={price}
           web3Modal={web3Modal}
           loadWeb3Modal={loadWeb3Modal}
@@ -296,9 +228,9 @@ function App(props) {
             {
               /*  if the local provider has a signer, let's show the faucet:  */
               faucetAvailable ? (
-                <Faucet localProvider={localProvider} 
+                <Faucet localProvider={provider} 
                 // price={price} 
-                // ensProvider={mainnetProvider} 
+                // ensProvider={provider} 
                 />
               ) : (
                 ""

@@ -4,7 +4,7 @@ import { AddressZero } from "@ethersproject/constants";
 import { SAMPLE_JSON_URI, LINK_CONTRACT_ADDRESS } from "../constants";
 import { parseEther, formatEther } from "@ethersproject/units";
 
-import { useContractReader, useCustomContractLoader, useERC20ContractLoader } from "../hooks";
+import { useContractReader, useCustomContractLoader, useERC20ContractLoader, useEventListener } from "../hooks";
 
 // Admin view of raffle for managers
 export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }) {
@@ -22,9 +22,14 @@ export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }
 
   const linkBalance = useContractReader({ Link: linkContract }, "Link", "balanceOf", [raffleAddress]);
 
+  const drawEvents = useEventListener({ Raffle: raffleClone }, "Raffle", "drawWinnerCalled", provider, 1);
+
   return (
     <div>
       <Row>Address: {raffleAddress}</Row>
+      <Row>Events:
+      {drawEvents}
+      </Row>
       <Row>{prizeSet ? `Prize: ${prizeAddress}` : "Prize has not been set for this raffle."}</Row>
       <Row>
         {winnerDeclared ? (
@@ -33,8 +38,11 @@ export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }
           <div>
             <Button
               onClick={() => {
-                console.log('calling draw from', JSON.stringify(raffleClone.drawWinner))
-                tx(raffleClone.drawWinner());
+                tx(raffleClone.drawWinner({
+                  // TODO gas station??
+                  gasLimit: 300000,//parseEther('0.0007'),   
+                  gasPrice: 40000000000 //, gas: 4700000,
+                }));
               }}
             >
               Draw Winner
