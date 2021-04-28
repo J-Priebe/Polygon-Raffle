@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React from "react";
-import {  Divider, Row } from "antd";
-import { Raffle} from "../components";
+import { Divider, Row } from "antd";
+import { Raffle } from "../components";
 import { AddressZero } from "@ethersproject/constants";
 
 import { useContractReader } from "../hooks";
 
-export default function Home({ address, provider, contracts}) {
+export default function Home({ address, provider, contracts }) {
   // Contract-level filtering confines us to static arrays,
   // so we have to filter out the Address-Zero entries here
   const completedRaffles = (useContractReader(contracts, "RaffleFactory", "getCompletedRaffles") || []).filter(
@@ -23,7 +23,13 @@ export default function Home({ address, provider, contracts}) {
         <h2>Current Raffles:</h2>
         <Row>
           {activeRaffles.map(raffleAddress => (
-              <Raffle key={raffleAddress} active={true} raffleAddress={raffleAddress} provider={provider} userAddress={address} />
+            <Raffle
+              key={raffleAddress}
+              active={true}
+              raffleAddress={raffleAddress}
+              provider={provider}
+              userAddress={address}
+            />
           ))}
         </Row>
         <Divider />
@@ -31,7 +37,13 @@ export default function Home({ address, provider, contracts}) {
         <h2> Past Raffles: </h2>
         <Row>
           {completedRaffles.map(raffleAddress => (
-              <Raffle key={raffleAddress} active={false} raffleAddress={raffleAddress} provider={provider} userAddress={address} />
+            <Raffle
+              key={raffleAddress}
+              active={false}
+              raffleAddress={raffleAddress}
+              provider={provider}
+              userAddress={address}
+            />
           ))}
         </Row>
       </div>

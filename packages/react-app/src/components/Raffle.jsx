@@ -24,6 +24,8 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
   const donorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "donor");
   const prizeTitle = prizeData?.name || (donorAddress ? donorAddress.slice(0, 8) + "***" : "Unnamed");
 
+  const winner = useContractReader({ Raffle: raffleClone }, "Raffle", "winner");
+
   return (
     <Col span={8}>
       <Row>
@@ -76,6 +78,7 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
           )
         }
       </Row>
+      <Row>{active ? "" : <Col>Winner: {winner}</Col>}</Row>
     </Col>
   );
 }

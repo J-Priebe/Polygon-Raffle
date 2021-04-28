@@ -38,8 +38,8 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     event raffleComplete(uint winningTicket, address winner);
     
     // CHAINLINK
-    bytes32 keyHash;
-    uint256 fee;
+    bytes32 public keyHash;
+    uint256 public fee;
 
     // set true while we are awaiting randomness from the oracle
     bool public drawInProgress;
@@ -55,10 +55,6 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     ) VRFConsumerBase(
         0x8C7382F9D8f56b33781fE506E897a4F1e2d17255,
         0x326C977E6efc84E512bB9C30f76E30c160eD06FB) public {
-
-        // applies to all instances of this contract
-        keyHash = 0x6e75b569a01ef56d18cab6a8e71e6600d6ce853834d4a5748b720d06f878b3a4;
-        fee = 0.0001 * 10 ** 18; // 0.0001 LINK
     }
 
 
@@ -171,6 +167,10 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         numTicketsSold = 0;
 
         drawInProgress = false;
+
+        // applies to all instances of this contract
+        keyHash = 0x6e75b569a01ef56d18cab6a8e71e6600d6ce853834d4a5748b720d06f878b3a4;
+        fee = 0.0001 * 10 ** 18; // 0.0001 LINK
 
         // TODO figure out if it's possible to approve and transfer
         // prize NFT in the init call, or at least through the Raffle interface

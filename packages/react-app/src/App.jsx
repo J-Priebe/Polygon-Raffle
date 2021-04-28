@@ -7,11 +7,7 @@ import { Row, Col, Button, Menu, Alert } from "antd";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import {
-  useGasPrice,
-  useContractLoader,
-  useBalance,
-} from "./hooks";
+import { useGasPrice, useContractLoader, useBalance } from "./hooks";
 import { Header, Account, Faucet } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
@@ -36,13 +32,12 @@ import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS["mumbai"]; 
+const targetNetwork = NETWORKS["mumbai"];
 
 // 🔭 block explorer URL
 const blockExplorer = targetNetwork.blockExplorer;
 
 function App(props) {
-  
   // TODO
   // one provider to rule them all. enough of this burner stuff.
   // if provider is null we do nothing.
@@ -74,7 +69,6 @@ function App(props) {
 
   // Load in your local 📝 contract and read a value from it:
   const contracts = useContractLoader(provider);
-
 
   let networkDisplay = "";
   if (targetNetwork?.chainId && selectedChainId && targetNetwork.chainId != selectedChainId) {
@@ -185,24 +179,13 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            <Home
-              address={address}
-              provider={provider}
-              contracts={contracts}
-            />
+            <Home address={address} provider={provider} contracts={contracts} />
           </Route>
           <Route name="raffleDetail" path="/raffle/:address">
-            <RaffleDetail 
-              provider={provider} 
-              tx={tx} 
-              connectedAddress={address}
-            />
+            <RaffleDetail provider={provider} tx={tx} connectedAddress={address} />
           </Route>
           <Route name="admin" path="/admin">
-            <Admin
-              tx={tx}
-              provider={provider}
-            />
+            <Admin tx={tx} provider={provider} />
           </Route>
         </Switch>
       </BrowserRouter>
@@ -228,9 +211,10 @@ function App(props) {
             {
               /*  if the local provider has a signer, let's show the faucet:  */
               faucetAvailable ? (
-                <Faucet localProvider={provider} 
-                // price={price} 
-                // ensProvider={provider} 
+                <Faucet
+                  localProvider={provider}
+                  // price={price}
+                  // ensProvider={provider}
                 />
               ) : (
                 ""
