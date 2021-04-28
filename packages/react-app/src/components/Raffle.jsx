@@ -25,7 +25,7 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
   const prizeTitle = prizeData?.name || (donorAddress ? donorAddress.slice(0, 8) + "***" : "Unnamed");
 
   return (
-    <Col span={8} key={raffleAddress}>
+    <Col span={8}>
       <Row>
         <Col>
           <Image src={prizeData?.image} />

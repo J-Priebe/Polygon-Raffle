@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
-import React, { useState } from "react";
-import { Button, Divider, Input, Row, Col, Image } from "antd";
-import { Raffle, AddressInput } from "../components";
-import { parseEther, formatEther } from "@ethersproject/units";
+import React from "react";
+import {  Divider, Row } from "antd";
+import { Raffle} from "../components";
 import { AddressZero } from "@ethersproject/constants";
 
-import { useContractReader, useCustomContractLoader, useFetch } from "../hooks";
+import { useContractReader } from "../hooks";
 
 export default function Home({ address, provider, contracts}) {
   // Contract-level filtering confines us to static arrays,

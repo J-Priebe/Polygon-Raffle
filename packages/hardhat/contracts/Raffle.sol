@@ -32,16 +32,17 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     event nftReceived(string msg);
     event drawWinnerCalled(address caller);
     event getRandomNumberCalled(uint seed);
-    event requestRandomnessCalled();
+    event requestRandomnessCalled(bytes32 requestId);
     event fulfillRandomnessCalled(bytes32 requestId, uint256 randomness);
     event declareWinnerCalled();
+    event raffleComplete(uint winningTicket, address winner);
     
     // CHAINLINK
     bytes32 keyHash;
     uint256 fee;
 
     // set true while we are awaiting randomness from the oracle
-    bool private drawInProgress;
+    bool public drawInProgress;
 
     uint256 public randomResult;
 
@@ -52,11 +53,11 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         // address _vrfCoordinator,
         // address _link
     ) VRFConsumerBase(
-        0x3d2341ADb2D31f1c5530cDC622016af293177AE0, 
-        0xb0897686c545045aFc77CF20eC7A532E3120E0F1) public {
+        0x8C7382F9D8f56b33781fE506E897a4F1e2d17255,
+        0x326C977E6efc84E512bB9C30f76E30c160eD06FB) public {
 
         // applies to all instances of this contract
-        keyHash = 0xf86195cf7690c55907b2b611ebb7343a6f649bff128701cc542f0569e2c549da;
+        keyHash = 0x6e75b569a01ef56d18cab6a8e71e6600d6ce853834d4a5748b720d06f878b3a4;
         fee = 0.0001 * 10 ** 18; // 0.0001 LINK
     }
 
@@ -83,7 +84,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         // You could use the request ID if you have multiple
         // randomness requests in a given contract, but we do not
         bytes32 req = requestRandomness(keyHash, fee, userProvidedSeed);
-        emit requestRandomnessCalled();
+        emit requestRandomnessCalled(req);
         return req;
     }
 
@@ -113,6 +114,8 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
             winner,
             prizeTokenId
         );
+
+        emit raffleComplete(winningTicketIndex, winner);
     }
 
 
@@ -179,7 +182,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     }
 
     function sendAvailableTicket(address sender) private {
-        // juuust in case require here too
+        // juuust in case // require here too
         require(numTicketsSold < numInitialTickets);
 
         // ID of the NFT is the # of the sold ticket, starting with 0
@@ -192,8 +195,8 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         uint numTickets = msg.value / ticketPrice;
         
         require(
-            (numInitialTickets - numTicketsSold) >= numTickets, 
-            "No more tickets available"
+           (numInitialTickets - numTicketsSold) >= numTickets, 
+           "No more tickets available"
         );
 
         for (uint i=0; i < numTickets; i++) {

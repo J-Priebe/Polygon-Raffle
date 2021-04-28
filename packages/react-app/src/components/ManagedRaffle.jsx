@@ -22,13 +22,18 @@ export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }
 
   const linkBalance = useContractReader({ Link: linkContract }, "Link", "balanceOf", [raffleAddress]);
 
-  const drawEvents = useEventListener({ Raffle: raffleClone }, "Raffle", "drawWinnerCalled", provider, 13175500);
+  const drawEvents = useEventListener({ Raffle: raffleClone }, "Raffle", "fulfillRandomnessCalled", provider);
+
+  const drawInProgress = useContractReader({ Raffle: raffleClone}, "Raffle", "drawInProgress");
+  const randomResult = useContractReader({ Raffle: raffleClone}, "Raffle", "randomResult"); 
 
   return (
     <div>
       <Row>Address: {raffleAddress}</Row>
+      <Row> Draw in progress? {drawInProgress?"Yes" :"No"}</Row>
+      <Row> Random Result: {randomResult?randomResult.toString():'--'}</Row>
       <Row>Events:
-      {drawEvents?JSON.stringify(drawEvents):'NA'}
+      {JSON.stringify(drawEvents[0])}
       </Row>
       <Row>{prizeSet ? `Prize: ${prizeAddress}` : "Prize has not been set for this raffle."}</Row>
       <Row>
