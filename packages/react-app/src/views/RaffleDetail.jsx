@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { 
-  useCustomContractLoader, 
-  useContractReader, useFetch } from "../hooks";
+import { useCustomContractLoader, useContractReader, useFetch } from "../hooks";
 
 import { parseEther, formatEther } from "@ethersproject/units";
 import { BigNumber } from "@ethersproject/bignumber";
 
-
 import { Button, Input, InputNumber, Image } from "antd";
 
 export default function RaffleDetail({ provider, tx, connectedAddress }) {
-
   let { address } = useParams();
 
   const [numTicketsToBuy, setNumTicketsToBuy] = useState(1);
@@ -30,23 +26,20 @@ export default function RaffleDetail({ provider, tx, connectedAddress }) {
 
   const prizeUri = useContractReader({ Raffle: raffleClone }, "Raffle", "getPrizeURI");
   // const prizeAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "prizeAddress");
-  const ticketUri = useContractReader({Raffle: raffleClone }, "Raffle", "ticketURI");
+  const ticketUri = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketURI");
 
   const prizeMeta = useFetch(prizeUri);
   const ticketMeta = useFetch(ticketUri);
   return (
     <div>
-      <p>Owned by You: {ownedByYou? ownedByYou.toString() : ""}</p>
-      <p>TODO actually show your ticket NFTs here</p>
-      <p>Could even have a secondary marketplace built right in where
-        ticket owners provide their contact info and list them for resale.
-      </p>
+      <p>Owned by You: {ownedByYou ? ownedByYou.toString() : ""}</p>
+
       <p>Tickets Sold: {numTicketsSold ? numTicketsSold.toString() : ""}</p>
       <p>Tickets Initially Available: {numInitialTickets ? numInitialTickets.toString() : ""}</p>
 
       <p>Ticket price: {ticketPrice ? formatEther(ticketPrice) : "--"} ETH</p>
       <Image src={prizeMeta?.image} />
-      
+
       <div style={{ margin: 8 }}>
         <Image src={ticketMeta?.image} width={50} height={50} />
         <InputNumber

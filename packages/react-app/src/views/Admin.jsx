@@ -30,9 +30,7 @@ export default function Admin({ tx, provider }) {
 
   return (
     <div>
-      <div>
-        Raffle Management Contract Address: {contracts?.RaffleFactory?.address}
-      </div>
+      <div>Raffle Management Contract Address: {contracts?.RaffleFactory?.address}</div>
       <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
         <h2> Your managed raffles: </h2>
         {managedRaffles.map(raffleAddress => {
@@ -50,14 +48,14 @@ export default function Admin({ tx, provider }) {
           Num Tickets :
           <InputNumber
             onChange={e => {
-              setNumTickets(e.target.value);
+              setNumTickets(e.toString());
             }}
             value={numTickets}
           />
           Ticket Price (ETH):
           <InputNumber
             onChange={e => {
-              setTicketPrice(e.target.value);
+              setTicketPrice(e.toString());
             }}
             value={ticketPrice}
           />
@@ -93,10 +91,7 @@ export default function Admin({ tx, provider }) {
             value={ticketURI}
           />
           Ticket Preview:
-          {
-          ticketPreview?
-          <Image src={ticketPreview} width={100} height={100} />
-          : ''}
+          {ticketPreview ? <Image src={ticketPreview} width={100} height={100} /> : ""}
           {/* TODO refresh upon transaction complete instead of waiting for poll.. */}
           <Button
             onClick={() => {

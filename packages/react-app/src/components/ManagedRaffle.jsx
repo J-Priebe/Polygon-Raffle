@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input, Row, Col } from "antd";
 import { AddressZero } from "@ethersproject/constants";
 import { SAMPLE_JSON_URI, LINK_CONTRACT_ADDRESS } from "../constants";
@@ -27,6 +27,8 @@ export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }
   const drawInProgress = useContractReader({ Raffle: raffleClone }, "Raffle", "drawInProgress");
   const randomResult = useContractReader({ Raffle: raffleClone }, "Raffle", "randomResult");
   const linkFee = useContractReader({ Raffle: raffleClone }, "Raffle", "fee");
+
+  const [prizeURI, setPrizeURI] = useState(SAMPLE_JSON_URI);
 
   return (
     <div>
@@ -83,10 +85,16 @@ export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }
           ""
         ) : (
           <div>
+            Prize NFT URI:
+            <Input
+              onChange={e => {
+                setPrizeURI(e.target.value);
+              }}
+              value={prizeURI}
+            />
             <Button
               onClick={() => {
-                console.log("sending prize to", raffleAddress, SAMPLE_JSON_URI);
-                tx(contracts.SamplePrizeNFT.sendPrize(raffleAddress, SAMPLE_JSON_URI));
+                tx(contracts.SamplePrizeNFT.sendPrize(raffleAddress, prizeURI));
               }}
             >
               Send Dummy NFT Prize
