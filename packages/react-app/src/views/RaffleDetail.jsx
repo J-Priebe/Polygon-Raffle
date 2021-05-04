@@ -23,15 +23,17 @@ export default function RaffleDetail({ provider, tx, connectedAddress }) {
   const ticketPrice = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketPrice");
   const numTicketsSold = useContractReader({ Raffle: raffleClone }, "Raffle", "numTicketsSold");
   const numInitialTickets = useContractReader({ Raffle: raffleClone }, "Raffle", "numInitialTickets");
-  const managerAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "manager");
-  const ticketMinterAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketMaker");
+  // const managerAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "manager");
+  // const ticketMinterAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketMinter");
 
   const ownedByYou = useContractReader({ Raffle: raffleClone }, "Raffle", "getTicketBalance", [connectedAddress]);
 
   const prizeUri = useContractReader({ Raffle: raffleClone }, "Raffle", "getPrizeURI");
-  const prizeAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "prizeAddress");
+  // const prizeAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "prizeAddress");
+  const ticketUri = useContractReader({Raffle: raffleClone }, "Raffle", "ticketURI");
 
   const prizeMeta = useFetch(prizeUri);
+  const ticketMeta = useFetch(ticketUri);
   return (
     <div>
       <p>Owned by You: {ownedByYou? ownedByYou.toString() : ""}</p>
@@ -44,8 +46,9 @@ export default function RaffleDetail({ provider, tx, connectedAddress }) {
 
       <p>Ticket price: {ticketPrice ? formatEther(ticketPrice) : "--"} ETH</p>
       <Image src={prizeMeta?.image} />
+      
       <div style={{ margin: 8 }}>
-        Buy Tickets:
+        <Image src={ticketMeta?.image} width={50} height={50} />
         <InputNumber
           min={1}
           onChange={v => {

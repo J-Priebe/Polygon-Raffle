@@ -22,7 +22,12 @@ export const NETWORK = (chainId)=>{
   }
 }
 
+// "Liens of New York" Dummy Prize NFT
 export const SAMPLE_JSON_URI = 'https://api.jsonbin.io/b/608432b348f71c7a71cd4389/3'
+
+// "Golden Ticket"; raffle owners can use their own ticket NFT template if they choose"
+// Using "Dice Roll" for now
+export const DEFAULT_TICKET_URI = 'https://api.jsonbin.io/b/609098d38a409667ca04f6e7'
 
 // Mumbai testnet ERC20 contracts
 export const LINK_CONTRACT_ADDRESS = '0x326C977E6efc84E512bB9C30f76E30c160eD06FB'

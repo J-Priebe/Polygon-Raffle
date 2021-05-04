@@ -25,7 +25,8 @@ contract RaffleFactory {
         uint256 initialNumTickets,
         uint256 initialTicketPrice,
         address payable benefactor,
-        string calldata benefactorName
+        string calldata benefactorName,
+        string calldata ticketURI
     ) external returns (address) {
         address clone = Clones.clone(raffleImplementation);
         Raffle(clone).initialize(
@@ -33,7 +34,8 @@ contract RaffleFactory {
             initialTicketPrice,
             msg.sender,
             benefactor,
-            benefactorName
+            benefactorName, 
+            ticketURI
         );
 
         raffles.push(clone);

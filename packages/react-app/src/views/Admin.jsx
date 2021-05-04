@@ -5,6 +5,7 @@ import { Button, Input, Divider } from "antd";
 import { parseEther, formatEther } from "@ethersproject/units";
 import { AddressZero } from "@ethersproject/constants";
 import { AddressInput, ManagedRaffle } from "../components";
+import { DEFAULT_TICKET_URI } from "../constants";
 
 import { useContractReader, useContractLoader } from "../hooks";
 
@@ -90,6 +91,8 @@ export default function Admin({ tx, provider }) {
                   parseEther(ticketPrice),
                   benefactorAddress,
                   benefactorName,
+                  // TODO make customizable.
+                  DEFAULT_TICKET_URI,
                 ),
               );
             }}

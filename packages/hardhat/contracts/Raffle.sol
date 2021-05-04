@@ -11,7 +11,14 @@ import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
 
 
 contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
-    RaffleTicket public ticketMaker;
+    RaffleTicket public ticketMinter;
+    // Raffle owners can use their own custom Ticket NFT URIs
+    // Note that we're cheating a little bit here by not returning
+    // the actual NFT URI, but a cached copy of it - this wouldn't work
+    // if, for example, different tickets had different URIs (e.g., maybe a number)
+    // We'd have to call ERC721().tokenURI instead.
+    string public ticketURI;
+
     uint public numInitialTickets;
     uint public ticketPrice;
     uint public numTicketsSold;
@@ -104,7 +111,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         benefactor.call{value:address(this).balance}('');
 
         // owner of the winning ticket gets the prize NFT
-        winner = ticketMaker.ownerOf(winningTicketIndex);
+        winner = ticketMinter.ownerOf(winningTicketIndex);
         ERC721(prizeAddress).safeTransferFrom(
             address(this),
             winner,
@@ -131,11 +138,11 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
 
 
     function getTicketOwner(uint256 ticketId) public view returns (address) {
-        return ticketMaker.ownerOf(ticketId);
+        return ticketMinter.ownerOf(ticketId);
     }
 
     function getTicketBalance(address addr) public view returns (uint256) {
-        return ticketMaker.balanceOf(addr);
+        return ticketMinter.balanceOf(addr);
     }
 
     // NOTE: Assumes prize contract includes metadata extension
@@ -154,13 +161,15 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         uint  initialTicketPrice,
         address raffleManager,
         address payable raffleBenefactor,
-        string memory raffleBenefactorName
+        string memory raffleBenefactorName,
+        string memory raffleTicketURI
     ) public {
         manager = raffleManager;
         benefactor = raffleBenefactor;
         benefactorName = raffleBenefactorName;
 
-        ticketMaker = new RaffleTicket();
+        ticketURI = raffleTicketURI;
+        ticketMinter = new RaffleTicket();
         
         numInitialTickets = initialNumTickets;
         ticketPrice = initialTicketPrice;
@@ -186,7 +195,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         require(numTicketsSold < numInitialTickets);
 
         // ID of the NFT is the # of the sold ticket, starting with 0
-        ticketMaker.sendTicket(sender, numTicketsSold);
+        ticketMinter.sendTicket(sender, numTicketsSold, ticketURI);
         numTicketsSold ++;
     }
 

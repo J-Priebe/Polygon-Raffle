@@ -40,7 +40,6 @@ export default function Transactor(provider, gasPrice, etherscan) {
       try {
         let result;
         if (tx instanceof Promise) {
-          console.log("AWAITING TX", tx);
           result = await tx;
         } else {
           if (!tx.gasPrice) {
