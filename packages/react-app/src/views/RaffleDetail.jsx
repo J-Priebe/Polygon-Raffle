@@ -61,8 +61,6 @@ export default function RaffleDetail({ provider, tx, connectedAddress }) {
             // ticketPrice is in wei, the numbers we work with
             // are likely outside range of safe javascript integers
             const val = ticketPrice.mul(numTicketsToBuy);
-            // how do we handle big numbers?
-            console.log('sending value:', val);
             tx(raffleClone.enter({ value: val }));
           }}
         >

@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React, { useState } from "react";
-import { Button, Input, Divider } from "antd";
+import { Button, Input, InputNumber, Divider, Image } from "antd";
 import { parseEther, formatEther } from "@ethersproject/units";
 import { AddressZero } from "@ethersproject/constants";
 import { AddressInput, ManagedRaffle } from "../components";
 import { DEFAULT_TICKET_URI } from "../constants";
 
-import { useContractReader, useContractLoader } from "../hooks";
+import { useContractReader, useContractLoader, useFetch } from "../hooks";
 
 export default function Admin({ tx, provider }) {
   const contracts = useContractLoader(provider);
@@ -18,6 +18,9 @@ export default function Admin({ tx, provider }) {
   const [ticketPrice, setTicketPrice] = useState("0.01");
   const [benefactorAddress, setBenefactorAddress] = useState("");
   const [benefactorName, setBenefactorName] = useState("");
+  const [ticketURI, setTicketURI] = useState(DEFAULT_TICKET_URI);
+
+  const ticketPreview = useFetch(ticketURI)?.image;
 
   // Contract-level filtering confines us to static arrays,
   // so we have to filter out the Address-Zero entries here
@@ -45,14 +48,14 @@ export default function Admin({ tx, provider }) {
         <h2>Launch a new Raffle:</h2>
         <div style={{ margin: 8 }}>
           Num Tickets :
-          <Input
+          <InputNumber
             onChange={e => {
               setNumTickets(e.target.value);
             }}
             value={numTickets}
           />
           Ticket Price (ETH):
-          <Input
+          <InputNumber
             onChange={e => {
               setTicketPrice(e.target.value);
             }}
@@ -82,6 +85,18 @@ export default function Admin({ tx, provider }) {
             }}
             value={benefactorName}
           />
+          Ticket URI:
+          <Input
+            onChange={e => {
+              setTicketURI(e.target.value);
+            }}
+            value={ticketURI}
+          />
+          Ticket Preview:
+          {
+          ticketPreview?
+          <Image src={ticketPreview} width={100} height={100} />
+          : ''}
           {/* TODO refresh upon transaction complete instead of waiting for poll.. */}
           <Button
             onClick={() => {
