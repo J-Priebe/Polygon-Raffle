@@ -15,3 +15,4 @@ export { default as Swap } from "./Swap";
 export { default as ThemeSwitch } from "./ThemeSwitch";
 export { default as Raffle} from "./Raffle";
 export { default as ManagedRaffle} from "./ManagedRaffle";
+export {default as RaffleDetail} from "./RaffleDetail";

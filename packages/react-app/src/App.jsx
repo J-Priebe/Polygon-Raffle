@@ -11,7 +11,7 @@ import { useGasPrice, useContractLoader, useBalance } from "./hooks";
 import { Header, Account, Faucet } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
-import { Home, RaffleDetail, Admin } from "./views";
+import { Home, Admin } from "./views";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 /*
     Welcome to 🏗 scaffold-eth !
@@ -179,10 +179,7 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            <Home address={address} provider={provider} contracts={contracts} />
-          </Route>
-          <Route name="raffleDetail" path="/raffle/:address">
-            <RaffleDetail provider={provider} tx={tx} connectedAddress={address} />
+            <Home address={address} provider={provider} contracts={contracts} tx={tx}/>
           </Route>
           <Route name="admin" path="/admin">
             <Admin tx={tx} provider={provider} />

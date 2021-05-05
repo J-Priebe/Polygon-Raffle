@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Divider, Row } from "antd";
-import { Raffle } from "../components";
+import { Raffle, RaffleDetail } from "../components";
 import { AddressZero } from "@ethersproject/constants";
 
 import { useContractReader } from "../hooks";
 
-export default function Home({ address, provider, contracts }) {
+export default function Home({ address, provider, contracts, tx }) {
   // Contract-level filtering confines us to static arrays,
   // so we have to filter out the Address-Zero entries here
   const completedRaffles = (useContractReader(contracts, "RaffleFactory", "getCompletedRaffles") || []).filter(
@@ -21,17 +21,16 @@ export default function Home({ address, provider, contracts }) {
     <div>
       <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
         <h2>Current Raffles:</h2>
-        <Row>
           {activeRaffles.map(raffleAddress => (
-            <Raffle
+            <RaffleDetail
               key={raffleAddress}
               active={true}
               raffleAddress={raffleAddress}
               provider={provider}
-              userAddress={address}
+              connectedAddress={address}
+              tx={tx}
             />
           ))}
-        </Row>
         <Divider />
 
         <h2> Past Raffles: </h2>

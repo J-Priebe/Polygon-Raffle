@@ -30,7 +30,7 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
     <Col span={8}>
       <Row>
         <Col>
-          <Image src={prizeData?.image} />
+          <Image src={prizeData?.image} width={250} height={250} />
         </Col>
       </Row>
       <Row>
@@ -41,7 +41,7 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
       {benefactorName ? (
         <Row>
           <Col>
-            <h4>{benefactorName}</h4>
+            <h4>&#x2764;{benefactorName}</h4>
           </Col>
         </Row>
       ) : (

@@ -33,7 +33,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     address public donor;
 
     address public winner;
-    // should we include a donor moniker too? I feel like
+    // should we include a donor/artist moniker too? I feel like
     // that should be part of the NFT metadata spec...
 
     event nftReceived(string msg);
