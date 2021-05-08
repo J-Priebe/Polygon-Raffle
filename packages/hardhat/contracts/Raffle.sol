@@ -36,7 +36,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     // should we include a donor/artist moniker too? I feel like
     // that should be part of the NFT metadata spec...
 
-    event nftReceived(string msg);
+    event nftReceived(address operator, address from, uint256 tokenId);
     event drawWinnerCalled(address caller);
     event getRandomNumberCalled(uint seed);
     event requestRandomnessCalled(bytes32 requestId);
@@ -216,12 +216,12 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
     // Not perfect, ideally we can receive the NFT in the same step as initializing
     // the contract, or *at least* through an interface that lives on the raffle itself.
     function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data) public override returns (bytes4) {
-        emit nftReceived("PRIZE RECEIVED");
+        emit nftReceived(operator, from, tokenId);
 
         // kinda janky, decline any tokens past the first one donated
         require(prizeAddress == address(0), "Already have a prize");
 
-        donor = from;
+        donor = operator;
         // now our prize can be uniquely identified
         // regardless of which "collection" it belongs to
         prizeAddress = msg.sender;

@@ -24,11 +24,18 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
 
   const winnerAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "winner");
   const winner = winnerAddress == userAddress? '🎉You!🎉' : winnerAddress
+
+  const artist = prizeData?.attributes?.artist || "Unknown Artist";
+
+
   return (
     <Col span={8}>
       <Row>
+        <Col>By: {artist}</Col>
+      </Row>
+      <Row>
         <Col>
-          <Image src={prizeData?.image} width={250} height={250} />
+          <Image src={prizeData?.image} width={200} height={200} />
         </Col>
       </Row>
       <Row>

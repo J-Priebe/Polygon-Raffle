@@ -208,7 +208,10 @@ function App(props) {
             }
           </Route>
           <Route name="admin" path="/admin">
-            <Admin tx={tx} provider={provider} />
+            {address?
+             <Admin tx={tx} provider={provider} />
+             : <div>Connect your wallet to create and manage your raffles.</div> 
+            }
           </Route>
         </Switch>
       </BrowserRouter>

@@ -38,8 +38,8 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
   const ticketMeta = useFetch(ticketUri);
 
   // hey, it's a demo and we can pretend all NFTs will have an
-  // artist atrribute even though it's not part of the official spec
-  const artist = "Beeple";
+  // artist attribute even though it's not part of the official spec
+  const artist = prizeData?.attributes?.artist || "Unknown Artist";
 
   const connected = !!writeProvider;
 
