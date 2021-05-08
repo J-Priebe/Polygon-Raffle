@@ -18,24 +18,23 @@ export default function Home({ address, readProvider, writeProvider, contracts, 
   );
 
   return (
-    <div>
-      <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
-        <h2>Current Raffles:</h2>
-          {activeRaffles.map(raffleAddress => (
-            <RaffleDetail
-              key={raffleAddress}
-              active={true}
-              raffleAddress={raffleAddress}
-              readProvider={readProvider}
-              writeProvider={writeProvider}
-              connectedAddress={address}
-              tx={tx}
-            />
-          ))}
-        <Divider />
-
-        <h2> Past Raffles: </h2>
+    <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
+      <h2>Current Raffles:</h2>
+      {activeRaffles.map(raffleAddress => (
+        <RaffleDetail
+          key={raffleAddress}
+          active={true}
+          raffleAddress={raffleAddress}
+          readProvider={readProvider}
+          writeProvider={writeProvider}
+          connectedAddress={address}
+          tx={tx}
+        />
+      ))}
+      <Divider />
+      {completedRaffles?.length ? (
         <Row>
+          <h2> Past Raffles: </h2>
           {completedRaffles.map(raffleAddress => (
             <Raffle
               key={raffleAddress}
@@ -46,7 +45,7 @@ export default function Home({ address, readProvider, writeProvider, contracts, 
             />
           ))}
         </Row>
-      </div>
+      ) : null}
     </div>
   );
 }
