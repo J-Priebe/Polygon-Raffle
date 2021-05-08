@@ -7,7 +7,7 @@ import { AddressZero } from "@ethersproject/constants";
 
 import { useContractReader } from "../hooks";
 
-export default function Home({ address, provider, contracts, tx }) {
+export default function Home({ address, readProvider, writeProvider, contracts, tx }) {
   // Contract-level filtering confines us to static arrays,
   // so we have to filter out the Address-Zero entries here
   const completedRaffles = (useContractReader(contracts, "RaffleFactory", "getCompletedRaffles") || []).filter(
@@ -26,7 +26,8 @@ export default function Home({ address, provider, contracts, tx }) {
               key={raffleAddress}
               active={true}
               raffleAddress={raffleAddress}
-              provider={provider}
+              readProvider={readProvider}
+              writeProvider={writeProvider}
               connectedAddress={address}
               tx={tx}
             />
@@ -40,7 +41,7 @@ export default function Home({ address, provider, contracts, tx }) {
               key={raffleAddress}
               active={false}
               raffleAddress={raffleAddress}
-              provider={provider}
+              provider={readProvider}
               userAddress={address}
             />
           ))}

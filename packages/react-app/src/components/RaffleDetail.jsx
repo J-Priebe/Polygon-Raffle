@@ -2,14 +2,14 @@ import React, { useState } from "react";
 
 import { useCustomContractLoader, useContractReader, useFetch } from "../hooks";
 
-import {formatEther } from "@ethersproject/units";
+import { formatEther } from "@ethersproject/units";
 
 import { Button, Col, Input, InputNumber, Image, Row } from "antd";
 
-export default function RaffleDetail({ provider, tx, raffleAddress, connectedAddress }) {
+export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAddress, connectedAddress }) {
   const [numTicketsToBuy, setNumTicketsToBuy] = useState(1);
 
-  const raffleClone = useCustomContractLoader(provider, "Raffle", raffleAddress);
+  const raffleClone = useCustomContractLoader(writeProvider || readProvider, "Raffle", raffleAddress);
 
   // a bulk reader would be dope.. bunch of calls that returns a dict
   const ticketPrice = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketPrice");
@@ -31,6 +31,8 @@ export default function RaffleDetail({ provider, tx, raffleAddress, connectedAdd
   const prizeTitle = prizeData?.name || "---";
   const prizeDescription = prizeData?.description || "---";
 
+  const drawInProgress = useContractReader({ Raffle: raffleClone }, "Raffle", "drawInProgress");
+
   const maxPrizeValue = ticketPrice && numInitialTickets ? ticketPrice.mul(numInitialTickets) : undefined;
 
   const ticketMeta = useFetch(ticketUri);
@@ -38,6 +40,8 @@ export default function RaffleDetail({ provider, tx, raffleAddress, connectedAdd
   // hey, it's a demo and we can pretend all NFTs will have an
   // artist atrribute even though it's not part of the official spec
   const artist = "Beeple";
+
+  const connected = !!writeProvider;
 
   return (
     <div>
@@ -105,6 +109,7 @@ export default function RaffleDetail({ provider, tx, raffleAddress, connectedAdd
           value={numTicketsToBuy}
         />
         <Button
+          disabled={!connected}
           onClick={() => {
             // ticketPrice is in wei, the numbers we work with
             // are likely outside range of safe javascript integers
@@ -112,7 +117,7 @@ export default function RaffleDetail({ provider, tx, raffleAddress, connectedAdd
             tx(raffleClone.enter({ value: val }));
           }}
         >
-          Buy Tickets
+          {drawInProgress ? "Draw in Progress" : connected ? "Buy Tickets" : "Connect wallet to buy tickets"}
         </Button>
       </div>
     </div>

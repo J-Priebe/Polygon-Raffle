@@ -5,8 +5,6 @@ import { Button, Row, Col, Image } from "antd";
 
 import { formatEther } from "@ethersproject/units";
 
-// this feels very Angular-like.. would like to get flux/redux in here
-// to manage the provider instead of passing it everywhere
 export default function Raffle({ raffleAddress, userAddress, provider, active }) {
   const raffleClone = useCustomContractLoader(provider, "Raffle", raffleAddress);
 
@@ -24,8 +22,8 @@ export default function Raffle({ raffleAddress, userAddress, provider, active })
   const donorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "donor");
   const prizeTitle = prizeData?.name || (donorAddress ? donorAddress.slice(0, 8) + "***" : "Unnamed");
 
-  const winner = useContractReader({ Raffle: raffleClone }, "Raffle", "winner");
-
+  const winnerAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "winner");
+  const winner = winnerAddress == userAddress? '🎉You!🎉' : winnerAddress
   return (
     <Col span={8}>
       <Row>

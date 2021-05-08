@@ -219,7 +219,7 @@ contract Raffle is Initializable, IERC721Receiver, VRFConsumerBase {
         emit nftReceived("PRIZE RECEIVED");
 
         // kinda janky, decline any tokens past the first one donated
-        // require(false); //prizeAddress == address(0), "Already have a prize");
+        require(prizeAddress == address(0), "Already have a prize");
 
         donor = from;
         // now our prize can be uniquely identified

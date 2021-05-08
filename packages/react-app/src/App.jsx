@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import "antd/dist/antd.css";
-import { Web3Provider } from "@ethersproject/providers";
+import { StaticJsonRpcProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
 import { Row, Col, Button, Menu, Alert } from "antd";
 import Web3Modal from "web3modal";
@@ -11,7 +11,7 @@ import { useGasPrice, useContractLoader, useBalance } from "./hooks";
 import { Header, Account, Faucet } from "./components";
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
-import { Home, Admin } from "./views";
+import { Home, Admin, Rewards } from "./views";
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 /*
     Welcome to 🏗 scaffold-eth !
@@ -29,6 +29,8 @@ import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
     // Deployment:
     yarn run generate will create a deployer account in packages/hardhat
     yarn run build && yarn run surge/s3/ipfs
+    // just disable BUY buttons and admin if you don't have a provider. easy
+    // alwaysa use infura, pointed at target chain, for reading.
 */
 
 /// 📡 What chain are your contracts deployed to?
@@ -37,14 +39,21 @@ const targetNetwork = NETWORKS["mumbai"];
 // 🔭 block explorer URL
 const blockExplorer = targetNetwork.blockExplorer;
 
+
+// whats event the point of getting your own RPC if you can read without one?
+const readProvider = new StaticJsonRpcProvider(targetNetwork.rpcUrl);
+
 function App(props) {
-  // TODO
-  // one provider to rule them all. enough of this burner stuff.
-  // if provider is null we do nothing.
-  // and if there is no metamask, we'll create a local provider.
-  // where the two are managed by a singular effect so we only have one at a time
-  // const foo = useGradualProvider(window.ethereum);
-  const [provider, setProvider] = useState();
+
+  // injected provider for writing
+  const [provider, setWriteProvider] = useState();
+
+  // infura provider pointed at target network for reading
+  // wait, can we use infura for mumbai or we need to get our own rpc
+  // yes.. we have to use RPC provider. project is already configured for multiple networks
+  // including mumbai.
+  // const readProvider = new JsonRpcProvider(targetNetwork.rpcUrl);
+
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
   const gasPrice = useGasPrice(targetNetwork, "fast");
@@ -68,7 +77,8 @@ function App(props) {
   // const yourMainnetBalance = useBalance(mainnetProvider, address);
 
   // Load in your local 📝 contract and read a value from it:
-  const contracts = useContractLoader(provider);
+  const readContracts = useContractLoader(readProvider);
+  const writeContracts = useContractLoader(provider)
 
   let networkDisplay = "";
   if (targetNetwork?.chainId && selectedChainId && targetNetwork.chainId != selectedChainId) {
@@ -105,8 +115,8 @@ function App(props) {
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
     // Wrapper for transforming a web3 provider (like metamask)
-    setProvider(new Web3Provider(provider));
-  }, [setProvider]);
+    setWriteProvider(new Web3Provider(provider));
+  }, [setWriteProvider]);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
@@ -162,7 +172,17 @@ function App(props) {
               }}
               to="/"
             >
-              Home
+              Raffles
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/rewards">
+            <Link
+              onClick={() => {
+                setRoute("/rewards");
+              }}
+              to="/rewards"
+            >
+              My Rewards
             </Link>
           </Menu.Item>
           <Menu.Item key="/admin">
@@ -179,7 +199,13 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            <Home address={address} provider={provider} contracts={contracts} tx={tx}/>
+            <Home address={address} readProvider={readProvider} writeProvider={provider} contracts={readContracts} tx={tx}/>
+          </Route>
+          <Route name="rewards" path="/rewards">
+            {address?
+              <Rewards readProvider={readProvider} contracts={readContracts} connectedAddress={address}/>
+              : <div>Connect your wallet to view your rewards!</div>
+            }
           </Route>
           <Route name="admin" path="/admin">
             <Admin tx={tx} provider={provider} />
