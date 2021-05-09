@@ -82,7 +82,7 @@ function RewardsSummary({ raffleAddress, readProvider, connectedAddress }) {
   );
 }
 
-export default function Tickets({ readProvider, contracts, connectedAddress }) {
+export default function Rewards({ readProvider, contracts, connectedAddress }) {
   // we can also show the prizes you won here...
 
   const allRaffles = useContractReader(contracts, "RaffleFactory", "getAllRaffles") || [];
