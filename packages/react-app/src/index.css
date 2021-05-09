@@ -94,6 +94,7 @@ div.ant-input-number {
 
 .nft-preview {
   width:100%;
+  margin-bottom: 10px;
 }
 
 .section {
@@ -178,7 +179,7 @@ div.ant-input-number {
 } */
 
 .price-info {
-  margin-top:10px!important;
+  margin-top:20px!important;
   text-align: center!important;
 }
 
