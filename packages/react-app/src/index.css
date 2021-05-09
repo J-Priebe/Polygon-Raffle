@@ -1,8 +1,102 @@
+@import url("https://use.typekit.net/rkh5rvy.css");
+
 body {
-  margin: 0;
+  padding: 30px;
+  font-family: azo-sans-web, sans-serif!important;
+  font-size: 1rem!important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+div {
+  text-align: left!important;
+}
+
+h2 {
+  font-weight: 500!important;
+  font-size:2em;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  /* display:flexbox; */
+}
+
+
+.raffle-creator {
+  display:flex!important;
+}
+
+.input-group {
+  padding: 15px 0px;
+}
+
+input {
+  font-size: 0.9em;
+}
+input:focus {
+  background: #fff;
+  color: #0A0F19;
+  box-shadow: 2px 0px 5px #FFD90F;
+}
+
+input::placeholder {
+  color: #848891!important;
+}
+
+button {
+  border-radius:50px!important;
+  background:#0066FF!important;
+  color:white;
+  border: 0px!important;
+  padding-left: 40px!important;
+  padding-right: 40px!important;
+  font-size: 0.8em!important;
+  margin: 20px 0px!important;
+}
+
+button:hover {
+  color: white!important;
+}
+
+div.ant-input-number {
+  display:block!important;
+  width:100%;
+}
+.subtext {
+  font-size:0.8em;
+  font-style:italic;
+}
+
+.input-group > p {
+  margin-bottom:5px;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.side {
+  padding-right:10%!important;
+}
+.left {
+  flex-basis: 60%;
+}
+.right {
+  flex-basis:40%;
+}
+
+.nft-preview {
+  width:100%;
+}
+
+.section {
+  border-top: #363F53 1px solid;
+  padding-top: 10px;
 }
