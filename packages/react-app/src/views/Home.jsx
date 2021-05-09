@@ -18,9 +18,9 @@ export default function Home({ address, readProvider, writeProvider, contracts, 
   );
 
   return (
-    <div>
-      <div style={{ border: "1px solid #cccccc", padding: 16, width: "80%", margin: "auto", marginTop: 64 }}>
-        <h2>Current Raffles:</h2>
+    <div className="container">
+      <div>
+        <h2>Current Raffles</h2>
           {activeRaffles.map(raffleAddress => (
             <RaffleDetail
               key={raffleAddress}
@@ -34,7 +34,7 @@ export default function Home({ address, readProvider, writeProvider, contracts, 
           ))}
         <Divider />
 
-        <h2> Past Raffles: </h2>
+        <h2>Past Raffles</h2>
         <Row>
           {completedRaffles.map(raffleAddress => (
             <Raffle
