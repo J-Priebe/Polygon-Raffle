@@ -29,7 +29,7 @@ code {
 }
 
 
-.raffle-creator {
+.mini-app {
   display:flex!important;
 }
 
@@ -100,3 +100,89 @@ div.ant-input-number {
   border-top: #363F53 1px solid;
   padding-top: 10px;
 }
+
+.prize-title {
+  font-size: 5em;
+  line-height:1;
+  color:#fff;
+}
+
+.metric {
+  font-size: 0.9em;
+  line-height: 1.1;
+  color:#fff;
+  font-weight:500;
+}
+
+.value {
+  font-size:1.7em;
+  font-weight: 500;
+  color:#fff;
+  line-height: 1;
+  margin-top:5px;  
+  margin-bottom:2px;
+}
+
+.raffle-action {
+  border-top: #363F53 0.5px solid;
+  padding-top: 20px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  display:flex;
+}
+
+.extra {
+  font-size:0.9em;
+  opacity: 0.8;
+}
+
+.bloc {
+  flex-basis:50%;
+  padding-right:5%;
+}
+
+.letslight {
+  color: #fff;
+  font-weight:500;
+}
+
+.total-tix {
+  font-size: 0.7em;
+}
+
+/* .v-container {
+  position: relative;
+}
+
+.v-content {
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+} */
+
+.action {
+  border-radius:5px;
+  background-color: rgba(204,224,255,0.08);
+  padding:15px;
+  display:flex;
+  /* height:200px; */
+}
+
+.action-box {
+  padding-left:10%;
+}
+
+/* .top {
+  display:flex;
+} */
+
+.price-info {
+  margin-top:10px!important;
+  text-align: center!important;
+}
+
+.action-left { flex-basis: 40%;}
+.action-right { flex-basis: 60%;}
+
+.logo { height: 100px;}

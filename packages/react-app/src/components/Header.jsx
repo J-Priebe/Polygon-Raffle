@@ -5,10 +5,13 @@ import { PageHeader } from "antd";
 
 export default function Header() {
   return (
-      <PageHeader
-        title="Golden Ticket NFT Raffle"
-        subTitle="Host NFT Raffles on Layer 2. Your tickets are NFTs too!"
-        style={{ cursor: "pointer" }}
-      />
+    <div>
+      <img class="logo" src="/logo192.png" alt="Golden Ticket NFT Raffle"/>
+    </div>
+      // <PageHeader
+      //   title="Golden Ticket NFT Raffle"
+      //   subTitle="Host NFT Raffles on Layer 2. Your tickets are NFTs too!"
+      //   style={{ cursor: "pointer" }}
+      // />
   );
 }
