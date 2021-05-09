@@ -17,11 +17,15 @@ export const NETWORK = chainId => {
 
 // "Beeple EDM" Dummy Prize NFT
 export const SAMPLE_JSON_URI = "https://api.jsonbin.io/b/6096ed6b8211bb127e382e89";
+// Liens of new york
+export const LIENS_OF_NEW_YORK_URI = "https://api.jsonbin.io/b/608432b348f71c7a71cd4389/3";
+
+export const STARRY_NIGHT = "https://api.jsonbin.io/b/6097eec87a19ef1245a63194";
 
 // "Golden Ticket"; raffle owners can use their own ticket NFT template if they choose"
 // Using "Dice Roll" for now
 export const DEFAULT_TICKET_URI = "https://api.jsonbin.io/b/609098d38a409667ca04f6e7";
-
+export const GOLDEN_TICKET = "https://api.jsonbin.io/b/6097ef798211bb127e38acbe";
 // Mumbai testnet ERC20 contracts
 export const LINK_CONTRACT_ADDRESS = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
 

@@ -30,12 +30,13 @@ export default function Home({ address, readProvider, writeProvider, contracts, 
           connectedAddress={address}
           tx={tx}
         />
-      ))}
-      <Divider />
+        ))}
+        <Divider />
       {completedRaffles?.length ? (
-        <Row>
+        <div>
           <h2> Past Raffles: </h2>
           {completedRaffles.map(raffleAddress => (
+            <Row>
             <Raffle
               key={raffleAddress}
               active={false}
@@ -43,8 +44,9 @@ export default function Home({ address, readProvider, writeProvider, contracts, 
               provider={readProvider}
               userAddress={address}
             />
+            </Row>
           ))}
-        </Row>
+        </div>
       ) : null}
     </div>
   );

@@ -6,7 +6,7 @@ import { PageHeader } from "antd";
 export default function Header() {
   return (
     <div>
-      <img class="logo" src="/logo192.png" alt="Golden Ticket NFT Raffle"/>
+      <img className="logo" src="/logo192.png" alt="Golden Ticket NFT Raffle"/>
     </div>
       // <PageHeader
       //   title="Golden Ticket NFT Raffle"

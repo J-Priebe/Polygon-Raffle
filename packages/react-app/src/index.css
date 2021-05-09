@@ -104,20 +104,17 @@ div.ant-input-number {
 .prize-title {
   font-size: 5em;
   line-height:1;
-  color:#fff;
 }
 
 .metric {
   font-size: 0.9em;
   line-height: 1.1;
-  color:#fff;
   font-weight:500;
 }
 
 .value {
   font-size:1.7em;
   font-weight: 500;
-  color:#fff;
   line-height: 1;
   margin-top:5px;  
   margin-bottom:2px;
@@ -142,7 +139,6 @@ div.ant-input-number {
 }
 
 .letslight {
-  color: #fff;
   font-weight:500;
 }
 

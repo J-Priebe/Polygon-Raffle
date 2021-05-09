@@ -26,7 +26,7 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
   const ticketUri = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketURI");
 
   const benefactorName = useContractReader({ Raffle: raffleClone }, "Raffle", "benefactorName");
-  const benefactorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "benefactorAddress");
+  const benefactorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "benefactor");
 
   const prizeData = useFetch(prizeUri);
   const prizeTitle = prizeData?.name || "---";
@@ -92,7 +92,7 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
                 <div className="value">{ticketPrice ? `${(formatEther(ticketPrice) * numTicketsToBuy).toFixed(5)} Ξ` : "--"}</div>
               </div>
               <Button
-                disabled={!connected}
+                disabled={drawInProgress || !connected}
                 onClick={() => {
                   // ticketPrice is in wei, the numbers we work with
                   // are likely outside range of safe javascript integers

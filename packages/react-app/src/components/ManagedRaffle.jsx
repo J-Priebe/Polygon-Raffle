@@ -35,11 +35,6 @@ export default function ManagedRaffle({ raffleAddress, provider, tx, contracts }
       <Row>Address: {raffleAddress}</Row>
       <Row> Draw in progress? {drawInProgress ? "Yes" : "No"}</Row>
       <Row> Random Result: {randomResult ? randomResult.toString() : "--"}</Row>
-      <Row>Link fee: {linkFee?.toString() || "--"}</Row>
-      <Row>
-        Events:
-        {JSON.stringify(drawEvents[0])}
-      </Row>
       <Row>{prizeSet ? `Prize: ${prizeAddress}` : "Prize has not been set for this raffle."}</Row>
       <Row>
         {winnerDeclared ? (
