@@ -45,7 +45,7 @@ export default function Admin({ tx, provider }) {
     <div className="section">
       <h2>Create a New Raffle</h2>
     </div>
-    <div className="raffle-creator">
+    <div className="mini-app">
         <div className="side left">
             
 

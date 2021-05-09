@@ -26,6 +26,7 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
   const ticketUri = useContractReader({ Raffle: raffleClone }, "Raffle", "ticketURI");
 
   const benefactorName = useContractReader({ Raffle: raffleClone }, "Raffle", "benefactorName");
+  const benefactorAddress = useContractReader({ Raffle: raffleClone }, "Raffle", "benefactorAddress");
 
   const prizeData = useFetch(prizeUri);
   const prizeTitle = prizeData?.name || "---";
@@ -45,80 +46,64 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
 
   return (
     <div>
-      <Row justify="center" align="middle">
-        <Col>
-          <Row>
-            <Col>By: {artist}</Col>
-          </Row>
-          <Row align="middle">
-            {/* IMAGE */}
-            <Col>
-              <Image src={prizeData?.image} width={300} height={300} />
-            </Col>
-            {/* METADATA */}
-            <Col>
-              <Row>
-                <Col>{prizeTitle}</Col>
-              </Row>
-              <Row>
-                <Col>{prizeDescription}</Col>
-              </Row>
-              <Row>
-                <Col>Donated by:</Col>
-              </Row>
-              <Row>
-                <Col>{donorAddress}</Col>
-              </Row>
-              <Row>
-                <Col>&#x2764;For the benefit of:</Col>
-              </Row>
-              <Row>
-                <Col>{benefactorName}</Col>
-              </Row>
-            </Col>
-          </Row>
-          {/* PRICE AND TICKET DATA */}
-          <Row>
-            <Col span={6}>
-              <Row>Ticket Price</Row>
-              <Row>{ticketPrice ? formatEther(ticketPrice) : "--"} MATIC</Row>
-            </Col>
-            <Col span={6}>
-              <Row>Tickets Sold</Row>
-              <Row>{numTicketsSold ? numTicketsSold.toString() : "--"}</Row>
-              <Row>OF {numInitialTickets ? numInitialTickets.toString() : ""}</Row>
-            </Col>
-            <Col span={6}>
-              <Row>Tickets Owned</Row>
-              <Row>{ownedByYou ? ownedByYou.toString() : "--"}</Row>
-            </Col>
-            <Col span={6}>
-              <Row>Projected Art Value</Row> <Row>{maxPrizeValue ? formatEther(maxPrizeValue) : "--"}</Row>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-
-      <div style={{ margin: 8 }}>
-        <Image src={ticketMeta?.image} width={50} height={50} />
-        <InputNumber
-          min={1}
-          onChange={v => {
-            setNumTicketsToBuy(v);
-          }}
-          value={numTicketsToBuy}
-        />
-        <Button
-          disabled={!connected}
-          onClick={() => {
-            // ticketPrice is in wei, the numbers we work with
-            // are likely outside range of safe javascript integers
-            const val = ticketPrice.mul(numTicketsToBuy);
-            tx(raffleClone.enter({ value: val }));
-          }}
-        >
-          {drawInProgress ? "Draw in Progress" : connected ? "Buy Tickets" : "Connect wallet to buy tickets"}
-        </Button>
+      <div className="mini-app">
+        <div className="side left v-container">
+          <div className="v-content"><Image src={prizeData?.image} className="nft-preview"/></div>
+        </div>
+        <div className="side right">
+          <div className="prize-info">
+            <h3 className="prize-title">{prizeTitle}</h3>
+            <p className="prize-description">{prizeDescription}</p>
+            <p className="prize-artist">by <span className="letslight">{artist}</span></p>
+          </div>
+          <div className="donation-info">
+            <p>Donated by<br/><span className="letslight">{donorAddress}</span></p>
+            <p>For the benefit of<br/><span className="letslight">{benefactorName ? benefactorName : benefactorAddress}</span></p>
+          </div>
+          <div className="raffle-action">
+            <div className="bloc">
+              <div className="metric">Projected Value</div>
+              <div className="value">{maxPrizeValue ? formatEther(maxPrizeValue) : "--"} Ξ</div>
+              <div className="extra">$ 6,666.66</div>
+            </div>
+            <div className="bloc">
+              <div className="metric">Tickets Sold</div>
+                <div className="value">{numTicketsSold ? numTicketsSold.toString() : "--"}<span className="total-tix">/{numInitialTickets ? numInitialTickets.toString() : ""}</span></div>
+                <div className="extra">{((numTicketsSold / numInitialTickets) * 100).toFixed(2).toString()} %</div>
+            </div>
+          </div>
+          <div className="action">
+            <div className="right">
+              <div className="ticket-image"><Image src={ticketMeta?.image} className="nft-preview" /></div>
+            </div>
+            <div className="action-box left">
+              <div className="ticket-no">
+                <div className="extra">Number of Tickets</div>
+                <InputNumber
+                  min={1}
+                  onChange={v => {
+                    setNumTicketsToBuy(v);
+                  }}
+                  value={numTicketsToBuy}
+                />
+              </div>
+              <div className="price-info">
+                <div className="extra">You'll spend</div>
+                <div className="value">{ticketPrice ? `${(formatEther(ticketPrice) * numTicketsToBuy).toFixed(5)} Ξ` : "--"}</div>
+              </div>
+              <Button
+                disabled={!connected}
+                onClick={() => {
+                  // ticketPrice is in wei, the numbers we work with
+                  // are likely outside range of safe javascript integers
+                  const val = ticketPrice.mul(numTicketsToBuy);
+                  tx(raffleClone.enter({ value: val }));
+                }}>
+                  {drawInProgress ? "Draw in Progress" : connected ? "Buy Tickets" : "Connect Wallet"}
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
