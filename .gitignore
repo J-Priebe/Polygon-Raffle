@@ -37,3 +37,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
+packages/react-app/package-lock.json
+packages/react-app/package.json
