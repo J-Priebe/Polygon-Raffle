@@ -75,6 +75,7 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
           <div className="action">
             <div className="right">
               <div className="ticket-image"><Image src={ticketMeta?.image} className="nft-preview" /></div>
+              <div className="extra"> Each ticket is an NFT represented above.</div>
             </div>
             <div className="action-box left">
               <div className="ticket-no">
@@ -88,8 +89,9 @@ export default function RaffleDetail({ readProvider, writeProvider, tx, raffleAd
                 />
               </div>
               <div className="price-info">
-                <div className="extra">You'll spend</div>
+                <div className="metric">You'll spend</div>
                 <div className="value">{ticketPrice ? `${(formatEther(ticketPrice) * numTicketsToBuy).toFixed(5)} Ξ` : "--"}</div>
+                <div className="extra">Odds: {((numTicketsToBuy/numInitialTickets) * 100).toFixed(2)} %</div>
               </div>
               <Button
                 disabled={drawInProgress || !connected}
